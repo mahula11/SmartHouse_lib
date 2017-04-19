@@ -39,8 +39,21 @@ struct CONF_DEVICE {
 };
 
 struct CONF_MESSAGE {
-	INT32U macID;	//* Identifikator z CanBus zariadenia (z EEPROM)
-	byte confData[9];
+	CONF_MESSAGE(INT32U macID, unsigned char length, byte confData[]) {
+		_macID = macID;
+		_length = length;
+		for (int i = 0; i < length; i++) {
+			_confData[i] = confData[i];
+		}
+	};
+	CONF_MESSAGE() {
+		_macID = 0;
+		_length = 0; 
+	};
+
+	INT32U _macID;	//* Identifikator z CanBus zariadenia (z EEPROM)
+	byte _confData[9];
+	unsigned char _length;
 	//DEVICE_TYPE deviceType;	//* urcenie zariadenia vzhladom na GPIO pin
 	//INT8U gpio;		//* pin, ktory je pouzity (pri ziarovke/zasuvke ako vystupny, pri vypinaci ako vstupny, podla deviceType)
 	//INT32U canID;			//* ID spravy, ktore bude poslane pri udalosti. ked to bude vypinac, tak bude poslana sprava s tymto ID a ziarovky/zasuvky to budu odchytavat
@@ -52,6 +65,24 @@ class SmartHouse {
 public:
 	SmartHouse();
 	~SmartHouse();
+};
+
+class CanExt {
+public:
+	static bool isConfMes(INT32U & id) {
+		//* 27 bit v odpovedi znamena odpoved na ziadost o konfiguraciu
+		return (bitRead(id, 27) == 1);
+	}
+
+	static INT32U getNormalizedID(INT32U id) {
+		//* vycisti IDcko od bitov, ktore su konfiguracne, ktore nie su pre identifikator
+		bitClear(id, 27);
+		bitClear(id, 28);
+		bitClear(id, 29);
+		bitClear(id, 30);
+		bitClear(id, 31);
+		return id;
+	}
 };
 
 #endif
