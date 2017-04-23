@@ -24,6 +24,8 @@ struct MASK_FILTER {
 	INT32U filterRXF5;
 };
 
+#define MAC_ADDRESS_LENGTH 16	//* length of MAC address in bits
+
 
 enum DEVICE_TYPE { switchButton, pushButton, stairCaseSwitch, light, lightWithDimmer, socket };
 enum MESSAGE_TYPE { configRequest, configResponse, eventFromSwitch, eventFromPushButton };
@@ -69,7 +71,7 @@ public:
 
 class CanExt {
 public:
-	static bool isConfMes(INT32U & id) {
+	static bool isMessageFromConfiguration(INT32U & id) {
 		//* 27 bit v odpovedi znamena odpoved na ziadost o konfiguraciu
 		return (bitRead(id, 27) == 1);
 	}
