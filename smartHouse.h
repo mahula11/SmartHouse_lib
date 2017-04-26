@@ -1,4 +1,4 @@
-
+﻿
 #ifndef Morse_h
 #define Morse_h
 
@@ -26,6 +26,28 @@ struct MASK_FILTER {
 
 #define MAC_ADDRESS_LENGTH 16	//* length of MAC address in bits
 
+//* structure of CanID
+//* 0 - 15, 16 bitov je adresa zariadenia
+//* 16 - 23, 8bitov pre typ spravy
+//*          0 - správa bez špecifikovaného typu
+//*          1 - žiadosť o poslanie celej conf
+//*          2 - odpoveď na ziadost o poslanie celej conf - posiela celu conf
+//*          3 - posiela pridanú conf
+//*          4 - odoberá konkrétnu conf zo zariadenia
+//*          5 - vypínač posiela správu(ziarovkam)
+#define CANID_START_MAC_ADDRESS 0
+#define CANID_END_MAC_ADDRESS 15
+#define CANID_LENGTH_OF_MAC_ADDRESS 16
+#define CANID_START_TYPE_IN_ID 16
+#define CANID_END_TYPE_IN_ID 23
+#define CANID_LENGTH_OF_TYPE 8
+
+#define CANID_TYPE_NO_SPECIFICATION 0
+#define CANID_TYPE_GET_WHOLE_CONF 1
+#define CANID_TYPE_SEND_WHOLE_CONF 2
+#define CANID_TYPE_ADD_CONF 3
+#define CANID_TYPE_DEL_CONF 4
+#define CANID_TYPE_SWITCH_SEND 5
 
 enum DEVICE_TYPE { switchButton, pushButton, stairCaseSwitch, light, lightWithDimmer, socket };
 enum MESSAGE_TYPE { configRequest, configResponse, eventFromSwitch, eventFromPushButton };
@@ -71,18 +93,19 @@ public:
 
 class CanExt {
 public:
-	static bool isMessageFromConfiguration(INT32U & id) {
-		//* 27 bit v odpovedi znamena odpoved na ziadost o konfiguraciu
-		return (bitRead(id, 27) == 1);
+	static bool isMessageFromCanConf(INT32U & id) {
+		//* nastavime masku 16711680 = 0000 0000 ‭1111 1111 0000 0000 0000 0000‬
+		int mask = 16711680;
+		//* posunieme o 16 miest do prava, cize posunieme bity do prveho byte 
+		uint8_t res = (id & mask) >> 16;
+		return (res == CANID_TYPE_GET_WHOLE_CONF);
 	}
 
 	static INT32U getNormalizedID(INT32U id) {
 		//* vycisti IDcko od bitov, ktore su konfiguracne, ktore nie su pre identifikator
-		bitClear(id, 27);
-		bitClear(id, 28);
-		bitClear(id, 29);
-		bitClear(id, 30);
-		bitClear(id, 31);
+		//* 65535 = 0000 0000 0000 0000 1111 1111 1111 1111
+		int mask = 65535;
+		id &= mask;
 		return id;
 	}
 };
