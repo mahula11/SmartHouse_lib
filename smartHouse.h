@@ -55,8 +55,8 @@ struct CONF_DEVICE {
 
 struct CONF_MESSAGE {
 	uint16_t _macID;	//* Identifikator z CanBus zariadenia (z EEPROM)
-	byte _confData[9];
-	unsigned char _length;
+	uint8_t _length;
+	uint8_t _confData[8];
 	//DEVICE_TYPE deviceType;	//* urcenie zariadenia vzhladom na GPIO pin
 	//INT8U gpio;		//* pin, ktory je pouzity (pri ziarovke/zasuvke ako vystupny, pri vypinaci ako vstupny, podla deviceType)
 	//INT32U canID;			//* ID spravy, ktore bude poslane pri udalosti. ked to bude vypinac, tak bude poslana sprava s tymto ID a ziarovky/zasuvky to budu odchytavat
