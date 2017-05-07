@@ -76,16 +76,35 @@ struct CONF_MESSAGE {
 	};
 };
 
+struct CONF {
+	uint16_t macAddress;
+	byte count;
+	CONF_MESSAGE * pMsgs;
+};
+
+
 
 class SmartHouse {
 public:
 	SmartHouse();
 	~SmartHouse();
+
+	static CONF * newConf(byte count) {
+		newConf(count, 0);
+	}
+
+	static CONF * newConf(byte count, uint16_t macAddress) {
+		CONF * conf = new CONF;
+		conf->count = count;
+		conf->macAddress = macAddress;
+		conf->pMsgs = new CONF_MESSAGE[count];
+		return conf;
+	}
 };
 
 class CanExt {
 public:
-	static bool isConfigurationMsg(uint32_t & id) {
+	static bool isConfigurationMsgFlag(uint32_t & id) {
 		//* nastavime masku 16711680 = 0000 0000 ‭1111 1111 0000 0000 0000 0000‬
 		int mask = 16711680;
 		//* posunieme o 16 miest do prava, cize posunieme bity do prveho byte 
@@ -95,6 +114,16 @@ public:
 		} else {
 			return false;
 		}
+	}
+
+	static void setConfiguationMsgFlag(uint32_t & canID) {
+		//* clear part of ID (which is for configuration)
+		for (int i = 16; i < 24; i++) {
+			bitClear(canID, i);
+		}
+		bitSet(canID, 31);				//* set extended message
+		bitSet(canID, 30);				//* set remote flag
+		bitSet(canID, 16);				//* set 1 to 3theard word - is meaning request for whole configuration
 	}
 
 	static uint16_t getDeviceID(uint32_t id) {
