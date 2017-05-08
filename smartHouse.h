@@ -33,25 +33,41 @@ struct MASK_FILTER {
 #define CANID_END_TYPE_IN_ID 23
 #define CANID_LENGTH_OF_TYPE 8
 
-#define CANID_MSGTYPE_NO_SPECIFICATION 0
-#define CANID_MSGTYPE_WHOLE_CONF 1
-#define CANID_MSGTYPE_SEND_WHOLE_CONF 2
-#define CANID_MSGTYPE_ADD_CONF 3
-#define CANID_MSGTYPE_DEL_CONF 4
-#define CANID_MSGTYPE_SWITCH_SEND 5
+//* type of messages
+#define CANID_MSGTYPE_NO_SPECIFICATION	0
+#define CANID_MSGTYPE_WHOLE_CONF		1
+#define CANID_MSGTYPE_SEND_WHOLE_CONF	2
+#define CANID_MSGTYPE_ADD_CONF			3
+#define CANID_MSGTYPE_DEL_CONF			4
+#define CANID_MSGTYPE_SWITCH_SEND		5
+#define CANID_MSGTYPE_RESET				6
 
-enum DEVICE_TYPE { switchButton, pushButton, stairCaseSwitch, light, lightWithDimmer, socket };
-enum MESSAGE_TYPE { configRequest, configResponse, eventFromSwitch, eventFromPushButton };
+//* device types
+#define DEVICE_TYPE_SWITCH				0
+#define DEVICE_TYPE_PUSH_BUTTON			1
+#define DEVICE_TYPE_STAIR_CASE_SWITCH	2
+#define DEVICE_TYPE_LIGHT				3
+#define DEVICE_TYPE_LIGHT_WITH_DIMMER	4
+#define DEVICE_TYPE_SOCKET				5
+
+//* device type LIGHT
+#define STRUCT_LIGHT__TYPE			0	//* type
+#define STRUCT_LIGHT__GPIO			1	//* GPIO, where is a light
+#define STRUCT_LIGHT__SWITCH_CANID	2	//* canId of device, where is a switch (16bits)
+#define STRUCT_LIGHT__SWITCH_GPIO	3	//* GPIO number, where is switch conected
+
+//enum DEVICE_TYPE { switchButton, pushButton, stairCaseSwitch, light, lightWithDimmer, socket };
+//enum MESSAGE_TYPE { configRequest, configResponse, eventFromSwitch, eventFromPushButton };
 //enum GPIO {1, 2};
-enum ROUTABLE_MESSAGES { routable, noRoutable };
+//enum ROUTABLE_MESSAGES { routable, noRoutable };
 
-struct CONF_DEVICE {
-	uint32_t macID;		//* Identifikator z CanBus zariadenia (z EEPROM)
-	//MASK_FILTER masksAndFilters;
-	byte canSpeed;
-	uint32_t segment;
-	DEVICE_TYPE deviceType;
-};
+//struct CONF_DEVICE {
+//	uint32_t macID;		//* Identifikator z CanBus zariadenia (z EEPROM)
+//	//MASK_FILTER masksAndFilters;
+//	byte canSpeed;
+//	uint32_t segment;
+//	DEVICE_TYPE deviceType;
+//};
 
 struct CONF_MESSAGE {
 	uint16_t _macID;	//* Identifikator z CanBus zariadenia (z EEPROM)
@@ -103,12 +119,17 @@ public:
 };
 
 class CanExt {
-public:
-	static bool isConfigurationMsgFlag(uint32_t & id) {
+private:
+	static uint8_t getConfigPartFromID(uint32_t & id) {
 		//* nastavime masku 16711680 = 0000 0000 ‭1111 1111 0000 0000 0000 0000‬
 		int mask = 16711680;
 		//* posunieme o 16 miest do prava, cize posunieme bity do prveho byte 
-		uint8_t res = (id & mask) >> 16;
+		return (id & mask) >> 16;
+	}
+
+public:
+	static bool isMsgFlagConfiguration(uint32_t & id) {
+		uint8_t res = getConfigPartFromID(id);
 		if (res == CANID_MSGTYPE_WHOLE_CONF || res == CANID_MSGTYPE_ADD_CONF || res == CANID_MSGTYPE_DEL_CONF) {
 			return true;
 		} else {
@@ -116,14 +137,27 @@ public:
 		}
 	}
 
-	static void setConfiguationMsgFlag(uint32_t & canID) {
+	static bool isMsgFlagFromSwitch(uint32_t & id) {
+		uint8_t res = getConfigPartFromID(id);
+		if (res == CANID_MSGTYPE_SWITCH_SEND) {
+			return true;
+		} else {
+			return false;	
+		}
+	}
+
+	static bool isMsgFlag(uint32_t & id, byte flag) {
+
+	}
+
+	static void setMsgFlagConfiguration(uint32_t & canID) {
 		//* clear part of ID (which is for configuration)
 		for (int i = 16; i < 24; i++) {
 			bitClear(canID, i);
 		}
 		bitSet(canID, 31);				//* set extended message
 		bitSet(canID, 30);				//* set remote flag
-		bitSet(canID, 16);				//* set 1 to 3theard word - is meaning request for whole configuration
+		bitSet(canID, 16);				//* set 1 to 3third word in ID - it's request for whole configuration
 	}
 
 	static uint16_t getDeviceID(uint32_t id) {
