@@ -26,6 +26,7 @@ struct MASK_FILTER {
 //*          3 - posiela pridanú conf
 //*          4 - odoberá konkrétnu conf zo zariadenia
 //*          5 - vypínač posiela správu(ziarovkam)
+//* 24 - 29, 6bitov - not used
 #define CANID_START_MAC_ADDRESS 0
 #define CANID_END_MAC_ADDRESS 15
 #define CANID_LENGTH_OF_MAC_ADDRESS 16
@@ -49,12 +50,30 @@ struct MASK_FILTER {
 #define DEVICE_TYPE_LIGHT				3
 #define DEVICE_TYPE_LIGHT_WITH_DIMMER	4
 #define DEVICE_TYPE_SOCKET				5
+#define DEVICE_TYPE_THERMOMETER			6
+#define DEVICE_TYPE_FLOATATION_SENSOR	7
+#define	DEVICE_TYPE_WINDOW_SWITCH		8
+#define DEVICE_TYPE_DOOR_SWITCH			9
+#define DEVICE_TYPE_HUMIDITY_SENSOR		10
+
+//* ------------DEVICES IN DETAIL------------ *//
 
 //* device type LIGHT
-#define STRUCT_LIGHT__TYPE			0	//* type
-#define STRUCT_LIGHT__GPIO			1	//* GPIO, where is a light
-#define STRUCT_LIGHT__SWITCH_CANID	2	//* canId of device, where is a switch (16bits)
-#define STRUCT_LIGHT__SWITCH_GPIO	3	//* GPIO number, where is switch conected
+//* in the configuration's data 
+#define LIGHT_ADDR_IN_CONF_TYPE				0	//* type of device (1 byte)
+#define LIGHT_ADDR_IN_CONF_GPIO				1	//* which GPIO connecting light (1 byte)
+#define LIGHT_ADDR_IN_CONF_SWITCH_CANID		2	//* CanID of switch which will turn on/off light (2 bytes)
+#define LIGHT_ADDR_IN_CONF_SWITCH_GPIO		4	//* GPIO of switch which will turn on/of light (1 byte)
+
+//* device type SWITCH
+//* in the message from switch
+#define SWITCH_ADDR_IN_MSG__SWITCH_GPIO		0	//* GPIO of switch (1 byte)
+#define SWITCH_ADDR_IN_MSG__SWITCH_VALUE	1	//* switch status (on/off - 0/255)
+//* in the configuration's data
+#define SWITCH_ADDR_IN_CONF_TYPE			0	//* type of device (1 byte)
+#define SWITCH_ADDR_IN_CONF_GPIO			1	//* GPIO, which is connected to the switch (1 byte)
+
+
 
 //enum DEVICE_TYPE { switchButton, pushButton, stairCaseSwitch, light, lightWithDimmer, socket };
 //enum MESSAGE_TYPE { configRequest, configResponse, eventFromSwitch, eventFromPushButton };
@@ -138,12 +157,19 @@ public:
 	}
 
 	static bool isMsgFlagFromSwitch(uint32_t & id) {
-		uint8_t res = getConfigPartFromID(id);
-		if (res == CANID_MSGTYPE_SWITCH_SEND) {
+		if (getConfigPartFromID(id) == CANID_MSGTYPE_SWITCH_SEND) {
 			return true;
 		} else {
 			return false;	
 		}
+	}
+
+	static void setMsgFlagFromSwitch(uint32_t & id) {
+		//* v tomto pripade posunieme 16x 5tku do lava, dostaneme ju do casti, kde mame konfiguraciu
+		//* 0101 --> 0101 0000 0000 0000 0000
+		//* CanBus ID je hodnota od 0 do 16bitov
+		//* cize ked tieto hodnoty spocitame (logicky OR), tak budeme mat konfiguraciu s IDckom
+		id += (CANID_MSGTYPE_SWITCH_SEND << 16);
 	}
 
 	static bool isMsgFlag(uint32_t & id, byte flag) {
@@ -166,6 +192,33 @@ public:
 		int mask = 65535;
 		id &= mask;
 		return id;
+	}
+
+	static byte getDeviceType(byte * pConfData) {
+		return pConfData[0];
+	}
+
+	static byte getLightGPIO(byte * pConfData) {
+		return pConfData[LIGHT_ADDR_IN_CONF_GPIO];
+	}
+
+	static byte getSwitchGPIO_fromMsg(byte * pConfData) {
+		return pConfData[SWITCH_ADDR_IN_MSG__SWITCH_GPIO];
+	}
+	static byte getSwitchGPIO_fromConf(byte * pConfData) {
+		return pConfData[SWITCH_ADDR_IN_CONF_GPIO];
+	}
+
+	static byte getSwitchValue_fromMsg(byte * pConfData) {
+		return pConfData[SWITCH_ADDR_IN_MSG__SWITCH_VALUE];
+	}
+	
+	static void setSwitchGPIO_toMsg(byte * pConfData, byte pin) {
+		pConfData[SWITCH_ADDR_IN_MSG__SWITCH_GPIO] = pin;
+	}
+
+	static void setSwitchValue_toMsg(byte * pConfData, byte value) {
+		pConfData[SWITCH_ADDR_IN_MSG__SWITCH_VALUE] = value;
 	}
 };
 
