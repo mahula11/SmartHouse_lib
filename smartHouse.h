@@ -55,6 +55,9 @@ struct MASK_FILTER {
 #define	DEVICE_TYPE_WINDOW_SWITCH		8
 #define DEVICE_TYPE_DOOR_SWITCH			9
 #define DEVICE_TYPE_HUMIDITY_SENSOR		10
+#define DEVICE_TYPE_PIR				11
+#define DEVICE_TYPE_LOCK			12
+#define DEVICE_TYPE_IBUTTON			13
 
 //* ------------DEVICES IN DETAIL------------ *//
 
