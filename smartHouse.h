@@ -44,20 +44,20 @@ struct MASK_FILTER {
 #define CANID_MSGTYPE_RESET				6
 
 //* device types
-#define DEVICE_TYPE_SWITCH				0
-#define DEVICE_TYPE_PUSH_BUTTON			1
-#define DEVICE_TYPE_STAIR_CASE_SWITCH	2
-#define DEVICE_TYPE_LIGHT				3
-#define DEVICE_TYPE_LIGHT_WITH_DIMMER	4
-#define DEVICE_TYPE_SOCKET				5
-#define DEVICE_TYPE_THERMOMETER			6
-#define DEVICE_TYPE_FLOATATION_SENSOR	7
-#define	DEVICE_TYPE_WINDOW_SWITCH		8
-#define DEVICE_TYPE_DOOR_SWITCH			9
-#define DEVICE_TYPE_HUMIDITY_SENSOR		10
-#define DEVICE_TYPE_PIR				11
-#define DEVICE_TYPE_LOCK			12
-#define DEVICE_TYPE_IBUTTON			13
+#define DEVICE_TYPE_SWITCH				1
+#define DEVICE_TYPE_PUSH_BUTTON			2
+#define DEVICE_TYPE_STAIR_CASE_SWITCH	3
+#define DEVICE_TYPE_LIGHT				4
+#define DEVICE_TYPE_LIGHT_WITH_DIMMER	5
+#define DEVICE_TYPE_SOCKET				6
+#define DEVICE_TYPE_THERMOMETER			7
+#define DEVICE_TYPE_FLOATATION_SENSOR	8
+#define	DEVICE_TYPE_WINDOW_SWITCH		9
+#define DEVICE_TYPE_DOOR_SWITCH			10
+#define DEVICE_TYPE_HUMIDITY_SENSOR		11
+#define DEVICE_TYPE_PIR					12
+#define DEVICE_TYPE_LOCK				13
+#define DEVICE_TYPE_IBUTTON				14
 
 //* ------------DEVICES IN DETAIL------------ *//
 
@@ -91,33 +91,61 @@ struct MASK_FILTER {
 //	DEVICE_TYPE deviceType;
 //};
 
-struct CONF_MESSAGE {
-	uint16_t _macID;	//* Identifikator z CanBus zariadenia (z EEPROM)
-	uint8_t _length;
-	uint8_t _confData[8];
+//* array for data from CanBus message
+typedef byte MsgData[8];
+//* array for configuration data
+typedef byte ConfData[8];
+
+//* CanID:
+//* |                |     Type of message     |              MAC address              |
+//* | 28 27 26 25 24 | 23 22 21 20 19 18 17 16 | 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0 |
+typedef uint32_t CanID;		//* CanBus ID
+typedef uint16_t MacID;		//* MediaAccessControl address - Netword address of device
+typedef uint8_t  MsgType;	//* type of message
+
+struct CONF_DATA {
+	byte _length;
+	ConfData _confData;
+
+	CONF_DATA(byte length, ConfData * pConfData) {
+		_length = length;
+		for (int i = 0; i < length; i++) {
+			_confData[i] = pConfData[i];
+		}
+	}
+
+	CONF_DATA() {
+		_length = 0;
+	}
+};
+
+struct MSG_DATA {
+	MacID _macID;	//* Identifikator z CanBus zariadenia (z EEPROM)
+	byte _length;
+	MsgData _msgData;
 	//DEVICE_TYPE deviceType;	//* urcenie zariadenia vzhladom na GPIO pin
 	//INT8U gpio;		//* pin, ktory je pouzity (pri ziarovke/zasuvke ako vystupny, pri vypinaci ako vstupny, podla deviceType)
 	//INT32U canID;			//* ID spravy, ktore bude poslane pri udalosti. ked to bude vypinac, tak bude poslana sprava s tymto ID a ziarovky/zasuvky to budu odchytavat
 	//ROUTABLE_MESSAGES routable;	//* urci, ci sprava bude moct byt presmerovana do inych segmentov siete
 	
-	CONF_MESSAGE(uint16_t & macID, unsigned char length, byte confData[]) {
+	MSG_DATA(MacID & macID, unsigned char length, MsgData * msgData) {
 		_macID = macID;
 		_length = length;
 		for (int i = 0; i < length; i++) {
-			_confData[i] = confData[i];
+			_msgData[i] = msgData[i];
 		}
 	};
 
-	CONF_MESSAGE() {
+	MSG_DATA() {
 		_macID = 0;
 		_length = 0;
 	};
 };
 
 struct CONF {
-	uint16_t macAddress;
+	MacID macAddress;
 	byte count;
-	CONF_MESSAGE * pMsgs;
+	CONF_DATA * pMsgs;
 };
 
 
@@ -131,18 +159,18 @@ public:
 		newConf(count, 0);
 	}
 
-	static CONF * newConf(byte count, uint16_t macAddress) {
+	static CONF * newConf(byte count, MacID macAddress) {
 		CONF * conf = new CONF;
 		conf->count = count;
 		conf->macAddress = macAddress;
-		conf->pMsgs = new CONF_MESSAGE[count];
+		conf->pMsgs = new CONF_DATA[count];
 		return conf;
 	}
 };
 
 class CanExt {
 private:
-	static uint8_t getConfigPartFromID(uint32_t & id) {
+	static MsgType getConfigPartFromID(CanID & id) {
 		//* nastavime masku 16711680 = 0000 0000 ‭1111 1111 0000 0000 0000 0000‬
 		int mask = 16711680;
 		//* posunieme o 16 miest do prava, cize posunieme bity do prveho byte 
@@ -150,8 +178,8 @@ private:
 	}
 
 public:
-	static bool isMsgFlagConfiguration(uint32_t & id) {
-		uint8_t res = getConfigPartFromID(id);
+	static bool isMsgFlagConfiguration(CanID & id) {
+		MsgType res = getConfigPartFromID(id);
 		if (res == CANID_MSGTYPE_WHOLE_CONF || res == CANID_MSGTYPE_ADD_CONF || res == CANID_MSGTYPE_DEL_CONF) {
 			return true;
 		} else {
@@ -159,7 +187,7 @@ public:
 		}
 	}
 
-	static bool isMsgFlagFromSwitch(uint32_t & id) {
+	static bool isMsgFlagFromSwitch(CanID & id) {
 		if (getConfigPartFromID(id) == CANID_MSGTYPE_SWITCH_SEND) {
 			return true;
 		} else {
@@ -167,7 +195,7 @@ public:
 		}
 	}
 
-	static void setMsgFlagFromSwitch(uint32_t & id) {
+	static void setMsgFlagFromSwitch(CanID & id) {
 		//* v tomto pripade posunieme 16x 5tku do lava, dostaneme ju do casti, kde mame konfiguraciu
 		//* 0101 --> 0101 0000 0000 0000 0000
 		//* CanBus ID je hodnota od 0 do 16bitov
@@ -175,11 +203,11 @@ public:
 		id += (CANID_MSGTYPE_SWITCH_SEND << 16);
 	}
 
-	static bool isMsgFlag(uint32_t & id, byte flag) {
+	static bool isMsgFlag(CanID & id, byte flag) {
 
 	}
 
-	static void setMsgFlagConfiguration(uint32_t & canID) {
+	static void setMsgFlagConfiguration(CanID & canID) {
 		//* clear part of ID (which is for configuration)
 		for (int i = 16; i < 24; i++) {
 			bitClear(canID, i);
@@ -189,7 +217,7 @@ public:
 		bitSet(canID, 16);				//* set 1 to 3third word in ID - it's request for whole configuration
 	}
 
-	static uint16_t getDeviceID(uint32_t id) {
+	static MacID getDeviceID(CanID id) {
 		//* vycisti IDcko od bitov, ktore su konfiguracne, ktore nie su pre identifikator
 		//* 65535 = 0000 0000 0000 0000 1111 1111 1111 1111
 		int mask = 65535;
@@ -197,32 +225,46 @@ public:
 		return id;
 	}
 
-	static byte getDeviceType(byte * pConfData) {
-		return pConfData[0];
+	static byte getDeviceTypeFromConf(ConfData * pConfData) {
+		return *pConfData[0];
 	}
 
-	static byte getLightGPIO(byte * pConfData) {
-		return pConfData[LIGHT_ADDR_IN_CONF_GPIO];
+	static byte getLightGPIO(ConfData * pConfData) {
+		return *pConfData[LIGHT_ADDR_IN_CONF_GPIO];
 	}
 
-	static byte getSwitchGPIO_fromMsg(byte * pConfData) {
-		return pConfData[SWITCH_ADDR_IN_MSG__SWITCH_GPIO];
+	static byte getSwitchGPIO_fromMsg(MsgData * pConfData) {
+		return *pConfData[SWITCH_ADDR_IN_MSG__SWITCH_GPIO];
 	}
-	static byte getSwitchGPIO_fromConf(byte * pConfData) {
-		return pConfData[SWITCH_ADDR_IN_CONF_GPIO];
+	static byte getSwitchGPIO_fromConf(ConfData * pConfData) {
+		return *pConfData[SWITCH_ADDR_IN_CONF_GPIO];
 	}
 
-	static byte getSwitchValue_fromMsg(byte * pConfData) {
-		return pConfData[SWITCH_ADDR_IN_MSG__SWITCH_VALUE];
+	static byte getSwitchValue_fromMsg(MsgData * pConfData) {
+		return *pConfData[SWITCH_ADDR_IN_MSG__SWITCH_VALUE];
 	}
 	
-	static void setSwitchGPIO_toMsg(byte * pConfData, byte pin) {
-		pConfData[SWITCH_ADDR_IN_MSG__SWITCH_GPIO] = pin;
+	static void setSwitchGPIO_toMsg(MsgData * pConfData, byte pin) {
+		*pConfData[SWITCH_ADDR_IN_MSG__SWITCH_GPIO] = pin;
 	}
 
-	static void setSwitchValue_toMsg(byte * pConfData, byte value) {
-		pConfData[SWITCH_ADDR_IN_MSG__SWITCH_VALUE] = value;
+	static void setSwitchValue_toMsg(MsgData * pConfData, byte value) {
+		*pConfData[SWITCH_ADDR_IN_MSG__SWITCH_VALUE] = value;
 	}
+
+	static bool isDeviceLight(ConfData * pConfData) {
+		//* Type is in first position in the DATA	
+		return (DEVICE_TYPE_LIGHT == *pConfData[LIGHT_ADDR_IN_CONF_TYPE]);
+	}
+
+	static CanID getLightsSwitchCanID(ConfData * pConfData) {
+		return *pConfData[LIGHT_ADDR_IN_CONF_SWITCH_CANID];
+	}
+
+	static byte getLightsSwitchGPIO(ConfData * pConfData) {
+		return *pConfData[LIGHT_ADDR_IN_CONF_SWITCH_GPIO];
+	}
+
 };
 
 #endif
