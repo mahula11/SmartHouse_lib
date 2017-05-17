@@ -34,16 +34,16 @@ struct MASK_FILTER {
 #define CANID_END_TYPE_IN_ID 23
 #define CANID_LENGTH_OF_TYPE 8
 
-//* type of messages
-#define CANID_MSGTYPE_NO_SPECIFICATION	0
-#define CANID_MSGTYPE_WHOLE_CONF		1
-#define CANID_MSGTYPE_SEND_WHOLE_CONF	2
-#define CANID_MSGTYPE_ADD_CONF			3
-#define CANID_MSGTYPE_DEL_CONF			4
-#define CANID_MSGTYPE_SWITCH_SEND		5
-#define CANID_MSGTYPE_RESET				6
+//* type of messages (size is 1byte)
+#define MSGTYPE_NO_SPECIFICATION	0
+#define MSGTYPE_FOR_CANCONF			1		//* CanDevice ask for whole configuration from CanConf
+#define MSGTYPE_FROM_CANCONF		2		//* CanConf send configuration to CanDevice
+#define MSGTYPE_FROM_CANCONF_ADD	3		//* CanConf add configuration to CanDevice
+#define MSGTYPE_FROM_CANCONF_DEL	4		//* CanConf send request for deleting configuration to CanDevice
+#define MSGTYPE_SWITCH_SEND			5		//* switch send msg to lights
+#define MSGTYPE_RESET				6		//* reset to all CanDevices
 
-//* device types
+//* device types (size is 1byte)
 #define DEVICE_TYPE_SWITCH				1
 #define DEVICE_TYPE_PUSH_BUTTON			2
 #define DEVICE_TYPE_STAIR_CASE_SWITCH	3
@@ -177,44 +177,65 @@ private:
 		return (id & mask) >> 16;
 	}
 
-public:
-	static bool isMsgFlagConfiguration(CanID & id) {
+	static bool isMsgFlag(CanID & id, byte flag1) {
 		MsgType res = getConfigPartFromID(id);
-		if (res == CANID_MSGTYPE_WHOLE_CONF || res == CANID_MSGTYPE_ADD_CONF || res == CANID_MSGTYPE_DEL_CONF) {
+		if (res == flag1) { // || res == CANID_MSGTYPE_ADD_CONF || res == CANID_MSGTYPE_DEL_CONF) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	static bool isMsgFlagFromSwitch(CanID & id) {
-		if (getConfigPartFromID(id) == CANID_MSGTYPE_SWITCH_SEND) {
+	static bool isMsgFlag(CanID & id, byte flag1, byte flag2) {
+		MsgType res = getConfigPartFromID(id);
+		if (res == flag1 || res == flag2) { // || res == CANID_MSGTYPE_DEL_CONF) {
 			return true;
 		} else {
-			return false;	
+			return false;
 		}
 	}
 
+	static bool isMsgFlag(CanID & id, byte flag1, byte flag2, byte flag3) {
+		MsgType res = getConfigPartFromID(id);
+		if (res == flag1 || res == flag2 || res == flag3) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+
+public:
+	static bool isMsgFlagFromSwitch(CanID & id) {
+		return isMsgFlag(id, MSGTYPE_SWITCH_SEND);
+	}
+
 	static void setMsgFlagFromSwitch(CanID & id) {
+		bitSet(id, 31);				//* set extended message
 		//* v tomto pripade posunieme 16x 5tku do lava, dostaneme ju do casti, kde mame konfiguraciu
 		//* 0101 --> 0101 0000 0000 0000 0000
 		//* CanBus ID je hodnota od 0 do 16bitov
 		//* cize ked tieto hodnoty spocitame (logicky OR), tak budeme mat konfiguraciu s IDckom
-		id += (CANID_MSGTYPE_SWITCH_SEND << 16);
+		id += (MSGTYPE_SWITCH_SEND << 16);
 	}
 
-	static bool isMsgFlag(CanID & id, byte flag) {
-
+	static bool isMsgFlagForConfiguration(CanID & id) {
+		return isMsgFlag(id, MSGTYPE_FOR_CANCONF);
 	}
 
-	static void setMsgFlagConfiguration(CanID & canID) {
-		//* clear part of ID (which is for configuration)
-		for (int i = 16; i < 24; i++) {
-			bitClear(canID, i);
-		}
-		bitSet(canID, 31);				//* set extended message
-		bitSet(canID, 30);				//* set remote flag
-		bitSet(canID, 16);				//* set 1 to 3third word in ID - it's request for whole configuration
+	static void setMsgFlagForConfiguration(CanID & id) {		
+		bitSet(id, 31);				//* set extended message
+		bitSet(id, 30);				//* set remote flag
+		id += (MSGTYPE_FOR_CANCONF << 16);
+	}
+
+	static bool isMsgFlagFromConfiguration(CanID & id) {
+		return isMsgFlag(id, MSGTYPE_FROM_CANCONF, MSGTYPE_FROM_CANCONF_ADD, MSGTYPE_FROM_CANCONF_DEL);
+	}
+
+	static void setMsgFlagFromConfiguration(CanID & id) {
+		bitSet(id, 31);				//* set extended message
+		id += (MSGTYPE_FROM_CANCONF << 16);
 	}
 
 	static MacID getDeviceID(CanID id) {
