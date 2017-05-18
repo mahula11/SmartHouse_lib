@@ -4,6 +4,13 @@
 
 #include <Arduino.h>
 
+#define DEBUG_BUILD
+#ifdef DEBUG_BUILD
+#  define DEBUG(x) do {Serial << x;} while (0)
+#else
+#  define DEBUG(x) do {} while (0)
+#endif
+
 struct MASK_FILTER {
 	uint32_t maskRXM0;
 	uint32_t filterRXF0;
