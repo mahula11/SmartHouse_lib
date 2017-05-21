@@ -166,6 +166,7 @@ struct DATA_BASE {
 struct DATA_SWITCH : DATA_BASE {
 	byte _gpio;
 	DATA_SWITCH(byte gpio) : DATA_BASE(DEVICE_TYPE_SWITCH, 2), _gpio(gpio) {}
+	byte * getBuf();
 };
 
 struct DATA_LIGHT : DATA_BASE {
