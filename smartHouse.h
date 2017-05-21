@@ -59,7 +59,7 @@ struct MASK_FILTER {
 #define DEVICE_TYPE_SOCKET				6
 #define DEVICE_TYPE_THERMOMETER			7
 #define DEVICE_TYPE_FLOATATION_SENSOR	8
-#define	DEVICE_TYPE_WINDOW_SWITCH		9
+#define	DEVICE_TYPE_WINDOW_SWITCH		9 
 #define DEVICE_TYPE_DOOR_SWITCH			10
 #define DEVICE_TYPE_HUMIDITY_SENSOR		11
 #define DEVICE_TYPE_PIR					12
@@ -117,7 +117,7 @@ struct CONF_DATA {
 	CONF_DATA(byte length, ConfData * pConfData) {
 		_length = length;
 		for (int i = 0; i < length; i++) {
-			_confData[i] = pConfData[i];
+			_confData[i] = *pConfData[i];
 		}
 	}
 
@@ -126,26 +126,71 @@ struct CONF_DATA {
 	}
 };
 
+//struct MSG_DATA {
+//	MacID _macID;	//* Identifikator z CanBus zariadenia (z EEPROM)
+//	byte _length;
+//	MsgData _msgData;
+//	//DEVICE_TYPE deviceType;	//* urcenie zariadenia vzhladom na GPIO pin
+//	//INT8U gpio;		//* pin, ktory je pouzity (pri ziarovke/zasuvke ako vystupny, pri vypinaci ako vstupny, podla deviceType)
+//	//INT32U canID;			//* ID spravy, ktore bude poslane pri udalosti. ked to bude vypinac, tak bude poslana sprava s tymto ID a ziarovky/zasuvky to budu odchytavat
+//	//ROUTABLE_MESSAGES routable;	//* urci, ci sprava bude moct byt presmerovana do inych segmentov siete
+//
+//	MSG_DATA(MacID macID, byte length, MsgData * msgData) {
+//		_macID = macID;
+//		_length = length;
+//		for (int i = 0; i < length; i++) {
+//			_msgData[i] = *msgData[i];
+//		}
+//	}
+//
+//	MSG_DATA(MacID & macID, byte length, MsgData * msgData) {
+//		_macID = macID;
+//		_length = length;
+//		for (int i = 0; i < length; i++) {
+//			_msgData[i] = *msgData[i];
+//		}
+//	};
+//
+//	MSG_DATA() {
+//		_macID = 0;
+//		_length = 0;
+//	};
+//};
+
+struct DATA_BASE {
+	byte _type;
+	byte _length;
+	DATA_BASE(byte type, byte length) : _type(type), _length(length) {}
+};
+
+struct DATA_SWITCH : DATA_BASE {
+	byte _gpio;
+	DATA_SWITCH(byte gpio) : DATA_BASE(DEVICE_TYPE_SWITCH, 2), _gpio(gpio) {}
+};
+
+struct DATA_LIGHT : DATA_BASE {
+	byte _gpio;
+	MacID _switchCanID;
+	byte _switchGPIO;
+	DATA_LIGHT(byte gpio, MacID switchCanID, byte switchGPIO) : DATA_BASE(DEVICE_TYPE_LIGHT, 5), _gpio(gpio), _switchCanID(switchCanID), _switchGPIO(switchGPIO) {}
+};
+
 struct MSG_DATA {
 	MacID _macID;	//* Identifikator z CanBus zariadenia (z EEPROM)
-	byte _length;
-	MsgData _msgData;
+	DATA_BASE * _pData;
 	//DEVICE_TYPE deviceType;	//* urcenie zariadenia vzhladom na GPIO pin
 	//INT8U gpio;		//* pin, ktory je pouzity (pri ziarovke/zasuvke ako vystupny, pri vypinaci ako vstupny, podla deviceType)
 	//INT32U canID;			//* ID spravy, ktore bude poslane pri udalosti. ked to bude vypinac, tak bude poslana sprava s tymto ID a ziarovky/zasuvky to budu odchytavat
 	//ROUTABLE_MESSAGES routable;	//* urci, ci sprava bude moct byt presmerovana do inych segmentov siete
 	
-	MSG_DATA(MacID & macID, unsigned char length, MsgData * msgData) {
+	MSG_DATA(MacID macID, DATA_BASE * pData) {
 		_macID = macID;
-		_length = length;
-		for (int i = 0; i < length; i++) {
-			_msgData[i] = msgData[i];
-		}
-	};
+		_pData = pData;
+	}
 
 	MSG_DATA() {
 		_macID = 0;
-		_length = 0;
+		_pData = nullptr;
 	};
 };
 
@@ -154,8 +199,6 @@ struct CONF {
 	byte count;
 	CONF_DATA * pMsgs;
 };
-
-
 
 class SmartHouse {
 public:
@@ -293,6 +336,10 @@ public:
 		return *pConfData[LIGHT_ADDR_IN_CONF_SWITCH_GPIO];
 	}
 
+	//* insert MacID to CanID
+	static void setMacIdToCanID(CanID & canId, MacID macId) {
+		canId += macId;
+	}
 };
 
 #endif
