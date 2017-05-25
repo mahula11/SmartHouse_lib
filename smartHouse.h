@@ -108,23 +108,23 @@ typedef byte ConfData[8];
 //* | 28 27 26 25 24 | 23 22 21 20 19 18 17 16 | 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0 |
 typedef uint32_t CanID;		//* CanBus ID
 typedef uint16_t MacID;		//* MediaAccessControl address - Netword address of device
-typedef uint8_t  MsgType;	//* type of message
+typedef byte  MsgType;	//* type of message
 
-struct CONF_DATA {
-	byte _length;
-	ConfData _confData;
-
-	CONF_DATA(byte length, ConfData * pConfData) {
-		_length = length;
-		for (int i = 0; i < length; i++) {
-			_confData[i] = *pConfData[i];
-		}
-	}
-
-	CONF_DATA() {
-		_length = 0;
-	}
-};
+//struct CONF_DATA { 
+//	byte _length;
+//	ConfData _confData;
+//
+//	CONF_DATA(byte length, ConfData * pConfData) {
+//		_length = length;
+//		for (int i = 0; i < length; i++) {
+//			_confData[i] = *pConfData[i];
+//		}
+//	}
+//
+//	CONF_DATA() {
+//		_length = 0;
+//	}
+//};
 
 //struct MSG_DATA {
 //	MacID _macID;	//* Identifikator z CanBus zariadenia (z EEPROM)
@@ -157,34 +157,79 @@ struct CONF_DATA {
 //	};
 //};
 
-struct DATA_BASE {
+struct CONF_DATA_BASE {
 	byte _type;
-	byte _length;
-	DATA_BASE(byte type, byte length) : _type(type), _length(length) {}
+	//byte _length;
+	CONF_DATA_BASE(byte type) : _type(type) {}
+	CONF_DATA_BASE() : _type(0) {};
+	virtual byte getSize() {
+		return sizeof(_type);
+	}
+	virtual void serialize(byte * pData) = 0;
+	virtual void deserialize(byte * pData) = 0;
+	static byte getType(byte * pData) {
+		return *pData;
+	};
 };
 
-struct DATA_SWITCH : DATA_BASE {
+struct CONF_DATA_SWITCH : CONF_DATA_BASE {
 	byte _gpio;
-	DATA_SWITCH(byte gpio) : DATA_BASE(DEVICE_TYPE_SWITCH, 2), _gpio(gpio) {}
-	byte * getBuf();
+	CONF_DATA_SWITCH(byte gpio) : CONF_DATA_BASE(DEVICE_TYPE_SWITCH), _gpio(gpio) {}
+	CONF_DATA_SWITCH() : CONF_DATA_BASE(DEVICE_TYPE_SWITCH), _gpio(0) {};
+
+	byte getSize() {
+		return CONF_DATA_BASE::getSize() + sizeof(_gpio);
+	};
+
+	void serialize(byte * pData) {
+		*pData = _type;
+		pData += sizeof(_type);
+		*pData = _gpio;
+	};
+
+	void deserialize(byte * pData) {
+		_type = *pData;
+		pData += sizeof(_type);
+		_gpio = *pData;
+	};
 };
 
-struct DATA_LIGHT : DATA_BASE {
+struct CONF_DATA_LIGHT : CONF_DATA_BASE {
 	byte _gpio;
-	MacID _switchCanID;
+	MacID _switchMacID;
 	byte _switchGPIO;
-	DATA_LIGHT(byte gpio, MacID switchCanID, byte switchGPIO) : DATA_BASE(DEVICE_TYPE_LIGHT, 5), _gpio(gpio), _switchCanID(switchCanID), _switchGPIO(switchGPIO) {}
+	CONF_DATA_LIGHT(byte gpio, MacID switchCanID, byte switchGPIO) : CONF_DATA_BASE(DEVICE_TYPE_LIGHT), _gpio(gpio), _switchMacID(switchCanID), _switchGPIO(switchGPIO) {}
+	CONF_DATA_LIGHT() : CONF_DATA_BASE(DEVICE_TYPE_LIGHT), _gpio(0), _switchMacID(0), _switchGPIO(0) {};
+	byte getSize() {
+		return CONF_DATA_BASE::getSize() + sizeof(_gpio) + sizeof(_switchMacID) + sizeof(_switchGPIO);
+	};
+
+	void serialize(byte * pData) {
+		*pData = _type;
+		pData += sizeof(_type);
+		*pData = _gpio;
+		pData += sizeof(_gpio);
+		*(MacID*)pData = _switchMacID;
+		pData += sizeof(_switchMacID);
+		*pData = _switchGPIO;
+	};
+
+	void deserialize(byte * pData) {
+		_type = *pData;
+		pData += sizeof(_type);
+		_gpio = *pData;
+		pData += sizeof(_gpio);
+		_switchMacID = *(MacID *)pData;
+		pData += sizeof(_switchMacID);
+		_switchGPIO = *pData;
+	};
 };
 
 struct MSG_DATA {
 	MacID _macID;	//* Identifikator z CanBus zariadenia (z EEPROM)
-	DATA_BASE * _pData;
-	//DEVICE_TYPE deviceType;	//* urcenie zariadenia vzhladom na GPIO pin
-	//INT8U gpio;		//* pin, ktory je pouzity (pri ziarovke/zasuvke ako vystupny, pri vypinaci ako vstupny, podla deviceType)
-	//INT32U canID;			//* ID spravy, ktore bude poslane pri udalosti. ked to bude vypinac, tak bude poslana sprava s tymto ID a ziarovky/zasuvky to budu odchytavat
-	//ROUTABLE_MESSAGES routable;	//* urci, ci sprava bude moct byt presmerovana do inych segmentov siete
-	
-	MSG_DATA(MacID macID, DATA_BASE * pData) {
+	CONF_DATA_BASE * _pData;
+
+	MSG_DATA(MacID macID, CONF_DATA_BASE * pData) {
 		_macID = macID;
 		_pData = pData;
 	}
@@ -198,7 +243,7 @@ struct MSG_DATA {
 struct CONF {
 	MacID macAddress;
 	byte count;
-	CONF_DATA * pMsgs;
+	CONF_DATA_BASE ** ppConfData;
 };
 
 class SmartHouse {
@@ -207,14 +252,14 @@ public:
 	~SmartHouse();
 
 	static CONF * newConf(byte count) {
-		newConf(count, 0);
+		return newConf(count, 0);
 	}
 
 	static CONF * newConf(byte count, MacID macAddress) {
 		CONF * conf = new CONF;
 		conf->count = count;
 		conf->macAddress = macAddress;
-		conf->pMsgs = new CONF_DATA[count];
+		conf->ppConfData = new CONF_DATA_BASE*[count];
 		return conf;
 	}
 };
