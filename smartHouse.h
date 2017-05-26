@@ -157,28 +157,67 @@ typedef byte  MsgType;	//* type of message
 //	};
 //};
 
-struct CONF_DATA_BASE {
+struct DATA_BASE {
 	byte _type;
 	//byte _length;
-	CONF_DATA_BASE(byte type) : _type(type) {}
-	CONF_DATA_BASE() : _type(0) {};
+	DATA_BASE(byte type) : _type(type) {}
+	DATA_BASE() : _type(0) {};
 	virtual byte getSize() {
 		return sizeof(_type);
 	}
 	virtual void serialize(byte * pData) = 0;
 	virtual void deserialize(byte * pData) = 0;
+	
+	byte getType() {
+		return _type;
+	};
+
 	static byte getType(byte * pData) {
 		return *pData;
 	};
 };
 
-struct CONF_DATA_SWITCH : CONF_DATA_BASE {
+struct TRAFFIC_DATA_SWITCH : DATA_BASE {
 	byte _gpio;
-	CONF_DATA_SWITCH(byte gpio) : CONF_DATA_BASE(DEVICE_TYPE_SWITCH), _gpio(gpio) {}
-	CONF_DATA_SWITCH() : CONF_DATA_BASE(DEVICE_TYPE_SWITCH), _gpio(0) {};
+	byte _value;
+
+	TRAFFIC_DATA_SWITCH(byte gpio, byte value) : DATA_BASE(DEVICE_TYPE_SWITCH), _gpio(gpio), _value(value) {}
+	//TRAFFIC_DATA_SWITCH() : DATA_BASE(DEVICE_TYPE_SWITCH), _gpio(0), _value(0) {};
+	TRAFFIC_DATA_SWITCH(byte * pDeserializeData) : DATA_BASE(DEVICE_TYPE_SWITCH) {
+		deserialize(pDeserializeData);
+	}
 
 	byte getSize() {
-		return CONF_DATA_BASE::getSize() + sizeof(_gpio);
+		return DATA_BASE::getSize() + sizeof(_gpio) + sizeof(_value);
+	};
+
+	void serialize(byte * pData) {
+		*pData = _type;
+		pData += sizeof(_type);
+		*pData = _gpio;
+		pData += sizeof(_gpio);
+		*pData = _value;
+	};
+
+	void deserialize(byte * pData) {
+		_type = *pData;
+		pData += sizeof(_type);
+		_gpio = *pData;
+		pData += sizeof(_gpio);
+		_value = *pData;
+	};
+};
+
+struct CONF_DATA_SWITCH : DATA_BASE {
+	byte _gpio;
+	CONF_DATA_SWITCH(byte gpio) : DATA_BASE(DEVICE_TYPE_SWITCH), _gpio(gpio) {}
+	CONF_DATA_SWITCH() : DATA_BASE(DEVICE_TYPE_SWITCH), _gpio(0) {};
+	CONF_DATA_SWITCH(byte * pDeserializeData) : DATA_BASE(DEVICE_TYPE_SWITCH) {
+		deserialize(pDeserializeData);
+	};
+
+	byte getSize() {
+		return DATA_BASE::getSize() + sizeof(_gpio);
 	};
 
 	void serialize(byte * pData) {
@@ -194,14 +233,18 @@ struct CONF_DATA_SWITCH : CONF_DATA_BASE {
 	};
 };
 
-struct CONF_DATA_LIGHT : CONF_DATA_BASE {
+struct CONF_DATA_LIGHT : DATA_BASE {
 	byte _gpio;
 	MacID _switchMacID;
 	byte _switchGPIO;
-	CONF_DATA_LIGHT(byte gpio, MacID switchCanID, byte switchGPIO) : CONF_DATA_BASE(DEVICE_TYPE_LIGHT), _gpio(gpio), _switchMacID(switchCanID), _switchGPIO(switchGPIO) {}
-	CONF_DATA_LIGHT() : CONF_DATA_BASE(DEVICE_TYPE_LIGHT), _gpio(0), _switchMacID(0), _switchGPIO(0) {};
+	CONF_DATA_LIGHT(byte gpio, MacID switchCanID, byte switchGPIO) : DATA_BASE(DEVICE_TYPE_LIGHT), _gpio(gpio), _switchMacID(switchCanID), _switchGPIO(switchGPIO) {}
+	CONF_DATA_LIGHT() : DATA_BASE(DEVICE_TYPE_LIGHT), _gpio(0), _switchMacID(0), _switchGPIO(0) {};
+	CONF_DATA_LIGHT(byte * pDeserializeData) : DATA_BASE(DEVICE_TYPE_LIGHT) {
+		deserialize(pDeserializeData);
+	};
+
 	byte getSize() {
-		return CONF_DATA_BASE::getSize() + sizeof(_gpio) + sizeof(_switchMacID) + sizeof(_switchGPIO);
+		return DATA_BASE::getSize() + sizeof(_gpio) + sizeof(_switchMacID) + sizeof(_switchGPIO);
 	};
 
 	void serialize(byte * pData) {
@@ -227,9 +270,9 @@ struct CONF_DATA_LIGHT : CONF_DATA_BASE {
 
 struct MSG_DATA {
 	MacID _macID;	//* Identifikator z CanBus zariadenia (z EEPROM)
-	CONF_DATA_BASE * _pData;
+	DATA_BASE * _pData;
 
-	MSG_DATA(MacID macID, CONF_DATA_BASE * pData) {
+	MSG_DATA(MacID macID, DATA_BASE * pData) {
 		_macID = macID;
 		_pData = pData;
 	}
@@ -243,7 +286,7 @@ struct MSG_DATA {
 struct CONF {
 	MacID macAddress;
 	byte count;
-	CONF_DATA_BASE ** ppConfData;
+	DATA_BASE ** ppConfData;
 };
 
 class SmartHouse {
@@ -259,7 +302,7 @@ public:
 		CONF * conf = new CONF;
 		conf->count = count;
 		conf->macAddress = macAddress;
-		conf->ppConfData = new CONF_DATA_BASE*[count];
+		conf->ppConfData = new DATA_BASE*[count];
 		return conf;
 	}
 };
