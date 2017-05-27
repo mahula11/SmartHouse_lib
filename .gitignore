@@ -49,3 +49,9 @@ __vm/*
 *.vcxpr*
 *.suo
 *.sln
+*cpp.d
+*cpp.o
+Debug/core.a
+*.elf
+*.hex
+Debug/board.buildinfo
