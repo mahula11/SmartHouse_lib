@@ -47,7 +47,7 @@ void CCanID::setFlag_fromSwitch() {
 	//* 0101 --> 0101 0000 0000 0000 0000
 	//* CanBus ID je hodnota od 0 do 16bitov
 	//* cize ked tieto hodnoty spocitame (logicky OR), tak budeme mat konfiguraciu s IDckom
-	_canID += (MSGTYPE_SWITCH_SEND << 16);
+	_canID += ((uint32_t)MSGTYPE_SWITCH_SEND << 16);
 }
 
 bool CCanID::hasFlag_forConfiguration() {
@@ -57,7 +57,7 @@ bool CCanID::hasFlag_forConfiguration() {
 void CCanID::setFlag_forConfiguration() {
 	bitSet(_canID, 31);				//* set extended message
 	bitSet(_canID, 30);				//* set remote flag
-	_canID += (MSGTYPE_FOR_CANCONF << 16);
+	_canID += ((uint32_t)MSGTYPE_FOR_CANCONF << 16);
 }
 
 bool CCanID::hasFlag_fromConfiguration() {
@@ -66,7 +66,7 @@ bool CCanID::hasFlag_fromConfiguration() {
 
 void CCanID::setFlag_fromConfiguration() {
 	bitSet(_canID, 31);				//* set extended message
-	_canID += (MSGTYPE_FROM_CANCONF << 16);
+	_canID += ((uint32_t)MSGTYPE_FROM_CANCONF << 16);
 }
 
 MacID CCanID::getMacID() {

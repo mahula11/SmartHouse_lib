@@ -7,12 +7,13 @@
 
 //* type of messages (size is 1byte)
 const byte MSGTYPE_NO_SPECIFICATION = 0;
-const byte MSGTYPE_FOR_CANCONF = 1;		//* CanDevice ask for whole configuration from CanConf
+const byte MSGTYPE_FOR_CANCONF = 1;			//* CanDevice ask for whole configuration from CanConf
 const byte MSGTYPE_FROM_CANCONF = 2;		//* CanConf send configuration to CanDevice
-const byte MSGTYPE_FROM_CANCONF_ADD = 3;		//* CanConf add configuration to CanDevice
-const byte MSGTYPE_FROM_CANCONF_DEL = 4;		//* CanConf send request for deleting configuration to CanDevice
-const byte MSGTYPE_SWITCH_SEND = 5;		//* switch send msg to lights
-const byte MSGTYPE_RESET = 6;		//* reset to all CanDevices
+const byte MSGTYPE_FROM_CANCONF_ADD = 3;	//* CanConf add configuration to CanDevice
+const byte MSGTYPE_FROM_CANCONF_DEL = 4;	//* CanConf send request for deleting configuration to CanDevice
+const byte MSGTYPE_SWITCH_SEND = 5;			//* switch send msg to lights
+const byte MSGTYPE_RESET = 6;				//* reset to all CanDevices
+const byte MSGTYPE_ALARM = 7;				//* send alarm (lights flashing, unlock locks, sockets off, etc)
 
 //* device types (size is 1byte)
 const byte DEVICE_TYPE_SWITCH = 1;
@@ -29,6 +30,8 @@ const byte DEVICE_TYPE_HUMIDITY_SENSOR = 11;
 const byte DEVICE_TYPE_PIR = 12;
 const byte DEVICE_TYPE_LOCK = 13;
 const byte DEVICE_TYPE_IBUTTON = 14;
+const byte DEVICE_TYPE_SMOKE_SENSOR = 15;
+const byte DEVICE_TYPE_BUZZER = 16;
 
 typedef uint16_t MacID;		//* MediaAccessControl address - Netword address of device
 typedef byte MsgData[8];

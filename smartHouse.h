@@ -14,16 +14,16 @@
 #  define DEBUG(x) do {} while (0)
 #endif
 
-struct MASK_FILTER {
-	uint32_t maskRXM0;
-	uint32_t filterRXF0;
-	uint32_t filterFXR1;
-	uint32_t maskRXM1;
-	uint32_t filterRXF2;
-	uint32_t filterRXF3;
-	uint32_t filterRXF4;
-	uint32_t filterRXF5;
-};
+//struct MASK_FILTER {
+//	uint32_t maskRXM0;
+//	uint32_t filterRXF0;
+//	uint32_t filterFXR1;
+//	uint32_t maskRXM1;
+//	uint32_t filterRXF2;
+//	uint32_t filterRXF3;
+//	uint32_t filterRXF4;
+//	uint32_t filterRXF5;
+//};
 
 //* structure of CanID
 //* 0 - 15, 16 bitov je adresa zariadenia
@@ -37,7 +37,7 @@ struct MASK_FILTER {
 //* 24 - 29, 6bitov - not used
 
 //* CanID:
-//* |                |     Type of message     |              MAC address              |
+//* |    Not used    |     Type of message     |              MAC address              |
 //* | 28 27 26 25 24 | 23 22 21 20 19 18 17 16 | 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0 |
 
 
