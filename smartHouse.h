@@ -9,9 +9,13 @@
 
 #define DEBUG_BUILD
 #ifdef DEBUG_BUILD
-#  define DEBUG(x) do {Serial << x;} while (0)
+#  define DEBUG(x) do {Serial << x << endl;} while (0)
+#  define VAR(x) #x << F(":") << x
+#  define PRINT_DATA(x) x[0] << "," << x[1] << "," <<  x[2] << "," << x[3] << "," << x[4] << "," << x[5] << "," << x[6] << "," << x[7]
 #else
 #  define DEBUG(x) do {} while (0)
+#  define VAR(x) 
+#  define PRINT_DATA(x) 
 #endif
 
 //struct MASK_FILTER {
