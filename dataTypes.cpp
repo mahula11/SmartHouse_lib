@@ -15,10 +15,6 @@ byte CDataBase::getType() {
 	return _type;
 };
 
-byte CDataBase::getType(byte * pData) {
-	return *pData;
-};
-
 //*---------------------------------------------
 
 CTrafficDataSwitch::CTrafficDataSwitch(byte gpio, byte value) : CDataBase(DEVICE_TYPE_SWITCH), _gpio(gpio), _value(value) {
@@ -30,20 +26,18 @@ CTrafficDataSwitch::CTrafficDataSwitch(byte * pDeserializeData) : CDataBase(DEVI
 }
 
 byte CTrafficDataSwitch::getSize() {
-	return CDataBase::getSize() + sizeof(_gpio) + sizeof(_value);
+	return sizeof(_gpio) + sizeof(_value);
 };
 
+//* traffic messages doesn't send type. type is in CanID against Conf messages where we send type of message
 void CTrafficDataSwitch::serialize(byte * pData) {
-	*pData = _type;
-	pData += sizeof(_type);
 	*pData = _gpio;
 	pData += sizeof(_gpio);
 	*pData = _value;
 };
 
+//* traffic messages doesn't send type. type is in CanID against Conf messages where we send type of message
 void CTrafficDataSwitch::deserialize(byte * pData) {
-	_type = *pData;
-	pData += sizeof(_type);
 	_gpio = *pData;
 	pData += sizeof(_gpio);
 	_value = *pData;
@@ -64,6 +58,7 @@ byte CConfDataSwitch::getSize() {
 	return CDataBase::getSize() + sizeof(_gpio);
 };
 
+//* Conf messages send type against traffic messages where we don't send type
 void CConfDataSwitch::serialize(byte * pData) {
 	*pData = _type;
 	pData += sizeof(_type);
@@ -91,6 +86,7 @@ byte CConfDataLight::getSize() {
 	return CDataBase::getSize() + sizeof(_gpio) + sizeof(_switchMacID) + sizeof(_switchGPIO);
 };
 
+//* Conf messages send type against traffic messages where we don't send type
 void CConfDataLight::serialize(byte * pData) {
 	*pData = _type;
 	pData += sizeof(_type);

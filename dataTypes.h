@@ -47,7 +47,6 @@ public:
 	virtual void deserialize(byte * pData) = 0;
 
 	byte getType();
-	static byte getType(byte * pData);
 };
 
 class CTrafficDataSwitch : public CDataBase {
