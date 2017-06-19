@@ -14,6 +14,7 @@ const byte MSGTYPE_FROM_CANCONF_DEL = 4;	//* CanConf send request for deleting c
 const byte MSGTYPE_SWITCH_SEND = 5;			//* switch send msg to lights
 const byte MSGTYPE_RESET = 6;				//* reset to all CanDevices
 const byte MSGTYPE_ALARM = 7;				//* send alarm (lights flashing, unlock locks, sockets off, etc)
+const byte MSGTYPE_ASK_SWITCH_FOR_VALUE = 8;//* after restart canDevice, lights ask switch for values
 
 //* device types (size is 1byte)
 const byte DEVICE_TYPE_SWITCH = 1;

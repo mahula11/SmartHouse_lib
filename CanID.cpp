@@ -50,6 +50,15 @@ void CCanID::setFlag_fromSwitch() {
 	_canID += ((uint32_t)MSGTYPE_SWITCH_SEND << 16);
 }
 
+bool CCanID::hasFlag_askSwitchForValue() {
+	return hasFlag(MSGTYPE_ASK_SWITCH_FOR_VALUE);
+}
+
+void CCanID::setFlag_askSwitchForValue() {
+	bitSet(_canID, 31);				//* set extended message
+	_canID += ((uint32_t)MSGTYPE_ASK_SWITCH_FOR_VALUE << 16);
+}
+
 bool CCanID::hasFlag_forConfiguration() {
 	return hasFlag(MSGTYPE_FOR_CANCONF);
 }

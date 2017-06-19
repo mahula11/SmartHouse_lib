@@ -19,6 +19,8 @@ public:
 
 	bool hasFlag_fromSwitch();
 	void setFlag_fromSwitch();
+	bool hasFlag_askSwitchForValue();
+	void setFlag_askSwitchForValue();
 	bool hasFlag_forConfiguration();
 	void setFlag_forConfiguration();
 	bool hasFlag_fromConfiguration();
