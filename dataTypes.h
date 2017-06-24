@@ -33,9 +33,14 @@ const byte DEVICE_TYPE_LOCK = 13;
 const byte DEVICE_TYPE_IBUTTON = 14;
 const byte DEVICE_TYPE_SMOKE_SENSOR = 15;
 const byte DEVICE_TYPE_BUZZER = 16;
+const byte DEVICE_TYPE_WATCHDOG_TIMEOUT = 17;
 
 typedef uint16_t MacID;		//* MediaAccessControl address - Netword address of device
 typedef byte MsgData[8];
+
+enum WATCHDOG_TIMEOUT {
+	to16ms, to32ms, to64ms, to125ms, to250ms, to500ms, to1000ms, to2000ms, to4000ms, to8000ms
+};
 
 class CDataBase {
 public:
@@ -85,6 +90,19 @@ public:
 	CConfDataLight();
 	CConfDataLight(byte * pDeserializeData);
 	CConfDataLight(byte gpio, MacID switchCanID, byte switchGPIO);
+
+	byte getSize();
+	void serialize(byte * pData);
+	void deserialize(byte * pData);
+};
+
+class CConfDataWatchdog : public CDataBase {
+public :
+	uint8_t _to; //* WATCHDOG_TIMEOUT
+
+	CConfDataWatchdog();
+	CConfDataWatchdog(byte * pDeserializeData);
+	CConfDataWatchdog(uint8_t to);
 
 	byte getSize();
 	void serialize(byte * pData);

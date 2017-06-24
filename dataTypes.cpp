@@ -15,8 +15,7 @@ byte CDataBase::getType() {
 	return _type;
 };
 
-//*---------------------------------------------
-
+//* ---------------------- start CTrafficDataSwitch --------------------------
 CTrafficDataSwitch::CTrafficDataSwitch(byte gpio, byte value) : CDataBase(DEVICE_TYPE_SWITCH), _gpio(gpio), _value(value) {
 }
 
@@ -42,8 +41,9 @@ void CTrafficDataSwitch::deserialize(byte * pData) {
 	pData += sizeof(_gpio);
 	_value = *pData;
 };
+//* ---------------------- end CTrafficDataSwitch --------------------------
 
-
+//* ---------------------- start CConfDataSwitch --------------------------
 CConfDataSwitch::CConfDataSwitch(byte gpio) : CDataBase(DEVICE_TYPE_SWITCH), _gpio(gpio) {
 }
 
@@ -70,8 +70,9 @@ void CConfDataSwitch::deserialize(byte * pData) {
 	pData += sizeof(_type);
 	_gpio = *pData;
 };
+//* ---------------------- end CConfDataSwitch --------------------------
 
-
+//* ---------------------- start CConfDataLight --------------------------
 CConfDataLight::CConfDataLight(byte gpio, MacID switchCanID, byte switchGPIO) : CDataBase(DEVICE_TYPE_LIGHT), _gpio(gpio), _switchMacID(switchCanID), _switchGPIO(switchGPIO) {
 }
 
@@ -106,4 +107,33 @@ void CConfDataLight::deserialize(byte * pData) {
 	pData += sizeof(_switchMacID);
 	_switchGPIO = *pData;
 };
+//* ---------------------- end CConfDataLight --------------------------
 
+//* ---------------------- start CConfDataWatchdog --------------------------
+CConfDataWatchdog::CConfDataWatchdog(uint8_t to) : CDataBase(DEVICE_TYPE_WATCHDOG_TIMEOUT), _to(to) {
+}
+
+CConfDataWatchdog::CConfDataWatchdog() : CDataBase(DEVICE_TYPE_WATCHDOG_TIMEOUT), _to(to2000ms) {
+}
+
+CConfDataWatchdog::CConfDataWatchdog(byte * pDeserializeData) : CDataBase(DEVICE_TYPE_WATCHDOG_TIMEOUT) {
+	deserialize(pDeserializeData);
+};
+
+byte CConfDataWatchdog::getSize() {
+	return CDataBase::getSize() + sizeof(_to);
+};
+
+//* Conf messages send type against traffic messages where we don't send type
+void CConfDataWatchdog::serialize(byte * pData) {
+	*pData = _type;
+	pData += sizeof(_type);
+	*pData = _to;
+};
+
+void CConfDataWatchdog::deserialize(byte * pData) {
+	_type = *pData;
+	pData += sizeof(_type);
+	_to = (WATCHDOG_TIMEOUT) *pData;
+};
+//* ---------------------- end CConfDataWatchdog --------------------------

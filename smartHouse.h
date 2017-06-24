@@ -47,6 +47,7 @@
 
 struct CONF {
 	MacID macAddress;
+	uint8_t watchdogTimeout;
 	byte count;
 	CDataBase ** ppConfData;
 };
