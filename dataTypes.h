@@ -12,7 +12,7 @@ const byte MSGTYPE_FROM_CANCONF = 2;		//* CanConf send configuration to CanDevic
 const byte MSGTYPE_FROM_CANCONF_ADD = 3;	//* CanConf add configuration to CanDevice
 const byte MSGTYPE_FROM_CANCONF_DEL = 4;	//* CanConf send request for deleting configuration to CanDevice
 const byte MSGTYPE_SWITCH_SEND = 5;			//* switch send msg to lights
-const byte MSGTYPE_RESET = 6;				//* reset to all CanDevices
+const byte MSGTYPE_RESET = 6;				//* reset to CanDevices
 const byte MSGTYPE_ALARM = 7;				//* send alarm (lights flashing, unlock locks, sockets off, etc)
 const byte MSGTYPE_ASK_SWITCH_FOR_VALUE = 8;//* after restart canDevice, lights ask switch for values
 
@@ -39,7 +39,7 @@ typedef uint16_t MacID;		//* MediaAccessControl address - Netword address of dev
 typedef byte MsgData[8];
 
 enum WATCHDOG_TIMEOUT {
-	to16ms, to32ms, to64ms, to125ms, to250ms, to500ms, to1000ms, to2000ms, to4000ms, to8000ms
+	to250ms, to500ms, to1000ms, to2000ms, to4000ms, to8000ms
 };
 
 class CDataBase {
@@ -109,3 +109,12 @@ public :
 	void deserialize(byte * pData);
 };
 
+//class CConfDataReset : public CDataBase {
+//public:
+//	CConfDataReset();
+//	CConfDataReset(byte * pDeserializeData);
+//
+//	byte getSize();
+//	void serialize(byte * pData);
+//	void deserialize(byte * pData);
+//};

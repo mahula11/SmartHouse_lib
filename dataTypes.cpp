@@ -137,3 +137,29 @@ void CConfDataWatchdog::deserialize(byte * pData) {
 	_to = (WATCHDOG_TIMEOUT) *pData;
 };
 //* ---------------------- end CConfDataWatchdog --------------------------
+
+//* ---------------------- start CConfDataReset --------------------------
+//CConfDataReset::CConfDataReset() : CDataBase(DEVICE_TYPE_WATCHDOG_TIMEOUT), _to(to2000ms) {
+//}
+//
+//CConfDataWatchdog::CConfDataWatchdog(byte * pDeserializeData) : CDataBase(DEVICE_TYPE_WATCHDOG_TIMEOUT) {
+//	deserialize(pDeserializeData);
+//};
+//
+//byte CConfDataWatchdog::getSize() {
+//	return CDataBase::getSize() + sizeof(_to);
+//};
+//
+////* Conf messages send type against traffic messages where we don't send type
+//void CConfDataWatchdog::serialize(byte * pData) {
+//	*pData = _type;
+//	pData += sizeof(_type);
+//	*pData = _to;
+//};
+//
+//void CConfDataWatchdog::deserialize(byte * pData) {
+//	_type = *pData;
+//	pData += sizeof(_type);
+//	_to = (WATCHDOG_TIMEOUT)*pData;
+//};
+//* ---------------------- end CConfDataReset --------------------------
