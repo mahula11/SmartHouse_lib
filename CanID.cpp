@@ -78,6 +78,31 @@ void CCanID::setFlag_fromConfiguration() {
 	_canID += ((uint32_t)MSGTYPE_FROM_CANCONF << 16);
 }
 
+bool CCanID::hasFlag_fromConfSetWatchdog() {
+
+}
+
+void CCanID::setFlag_fromConfSetWatchdog() {
+
+}
+
+void CCanID::hasFlag_fromConfSetSwitch() {
+
+}
+
+void CCanID::setFlag_fromConfSetSwitch() {
+
+}
+
+void CCanID::hasFlag_fromConfSetLight() {
+
+}
+
+void CCanID::setFlag_fromConfSetLight() {
+
+}
+
+
 MacID CCanID::getMacID() {
 	//* vycisti IDcko od bitov, ktore su konfiguracne, ktore nie su pre identifikator
 	//* 65535 = 0000 0000 0000 0000 1111 1111 1111 1111

@@ -25,6 +25,14 @@ public:
 	void setFlag_forConfiguration();
 	bool hasFlag_fromConfiguration();
 	void setFlag_fromConfiguration();
+
+	bool hasFlag_fromConfSetWatchdog();
+	void setFlag_fromConfSetWatchdog();
+	void hasFlag_fromConfSetSwitch();
+	void setFlag_fromConfSetSwitch();
+	void hasFlag_fromConfSetLight();
+	void setFlag_fromConfSetLight();
+
 	MacID getMacID();
 	//* insert MacID to CanID
 	void setMacID(MacID macID);
