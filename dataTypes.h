@@ -4,23 +4,33 @@
 
 //#include "smartHouse.h"
 
+//* messages types (size is 1byte, part of CanID (16-23bits))
+const byte TYPE__NO_SPECIFICATION = 0;
+const byte TYPE__ASK_FOR_CONF = 1;					//* CanDevice ask for whole configuration from CanConf
+const byte TYPE__FROM_CONF__COUNT = 2;				//* count of configurations
+const byte TYPE__FROM_CONF__SET_SIMPLE_SWITCH = 3;
+const byte TYPE__FROM_CONF__SET_SIMPLE_LIGHT = 4;
+const byte TYPE__FROM_SWITCH = 5;					//* switch send msg to lights
+const byte TYPE__ASK_SWITCH_FOR_VALUE = 6;			//* after restart canDevice, light ask to switch for values
+const byte TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT = 7;
+
 
 //* type of messages (size is 1byte)
 const byte MSGTYPE_NO_SPECIFICATION = 0;
-const byte MSGTYPE_FOR_CANCONF = 1;			//* CanDevice ask for whole configuration from CanConf
-const byte MSGTYPE_FROM_CANCONF = 2;		//* CanConf send configuration to CanDevice
-const byte MSGTYPE_FROM_CANCONF_ADD = 3;	//* CanConf add configuration to CanDevice
-const byte MSGTYPE_FROM_CANCONF_DEL = 4;	//* CanConf send request for deleting configuration to CanDevice
-const byte MSGTYPE_SWITCH_SEND = 5;			//* switch send msg to lights
+//const byte MSGTYPE_FOR_CANCONF = 1;			//* CanDevice ask for whole configuration from CanConf
+//const byte MSGTYPE_FROM_CANCONF = 2;		//* CanConf send configuration to CanDevice
+//const byte MSGTYPE_FROM_CANCONF_ADD = 3;	//* CanConf add configuration to CanDevice
+//const byte MSGTYPE_FROM_CANCONF_DEL = 4;	//* CanConf send request for deleting configuration to CanDevice
+//const byte MSGTYPE_SWITCH_SEND = 5;			//* switch send msg to lights
 const byte MSGTYPE_RESET = 6;				//* reset to CanDevices
 const byte MSGTYPE_ALARM = 7;				//* send alarm (lights flashing, unlock locks, sockets off, etc)
-const byte MSGTYPE_ASK_SWITCH_FOR_VALUE = 8;//* after restart canDevice, lights ask switch for values
+//const byte MSGTYPE_ASK_SWITCH_FOR_VALUE = 8;//* after restart canDevice, lights ask switch for values
 
 //* device types (size is 1byte)
-const byte DEVICE_TYPE_SWITCH = 1; // msgtype_fromSimpleSwitch 
+//const byte DEVICE_TYPE_SWITCH = 1; // msgtype_fromSimpleSwitch 
 const byte DEVICE_TYPE_PUSH_BUTTON = 2; //msgtype_
 const byte DEVICE_TYPE_STAIR_CASE_SWITCH = 3;
-const byte DEVICE_TYPE_LIGHT = 4;
+//const byte DEVICE_TYPE_LIGHT = 4;
 const byte DEVICE_TYPE_LIGHT_WITH_DIMMER = 5;
 const byte DEVICE_TYPE_SOCKET = 6;
 const byte DEVICE_TYPE_THERMOMETER = 7;
@@ -33,7 +43,7 @@ const byte DEVICE_TYPE_LOCK = 13;
 const byte DEVICE_TYPE_IBUTTON = 14;
 const byte DEVICE_TYPE_SMOKE_SENSOR = 15;
 const byte DEVICE_TYPE_BUZZER = 16;
-const byte DEVICE_TYPE_WATCHDOG_TIMEOUT = 17;
+//const byte DEVICE_TYPE_WATCHDOG_TIMEOUT = 17;
 
 typedef uint16_t MacID;		//* MediaAccessControl address - Netword address of device
 typedef byte MsgData[8];

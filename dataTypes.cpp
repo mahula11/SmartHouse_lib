@@ -16,11 +16,11 @@ byte CDataBase::getType() {
 };
 
 //* ---------------------- start CTrafficDataSwitch --------------------------
-CTrafficDataSwitch::CTrafficDataSwitch(byte gpio, byte value) : CDataBase(DEVICE_TYPE_SWITCH), _gpio(gpio), _value(value) {
+CTrafficDataSwitch::CTrafficDataSwitch(byte gpio, byte value) : CDataBase(TYPE__FROM_SWITCH), _gpio(gpio), _value(value) {
 }
 
 //CTrafficDataSwitch() : CDataBase(DEVICE_TYPE_SWITCH), _gpio(0), _value(0) {};
-CTrafficDataSwitch::CTrafficDataSwitch(byte * pDeserializeData) : CDataBase(DEVICE_TYPE_SWITCH) {
+CTrafficDataSwitch::CTrafficDataSwitch(byte * pDeserializeData) : CDataBase(TYPE__FROM_SWITCH) {
 	deserialize(pDeserializeData);
 }
 
@@ -44,42 +44,38 @@ void CTrafficDataSwitch::deserialize(byte * pData) {
 //* ---------------------- end CTrafficDataSwitch --------------------------
 
 //* ---------------------- start CConfDataSwitch --------------------------
-CConfDataSwitch::CConfDataSwitch(byte gpio) : CDataBase(DEVICE_TYPE_SWITCH), _gpio(gpio) {
+CConfDataSwitch::CConfDataSwitch(byte gpio) : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_SWITCH), _gpio(gpio) {
 }
 
-CConfDataSwitch::CConfDataSwitch() : CDataBase(DEVICE_TYPE_SWITCH), _gpio(0) {
+CConfDataSwitch::CConfDataSwitch() : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_SWITCH), _gpio(0) {
 }
 
-CConfDataSwitch::CConfDataSwitch(byte * pDeserializeData) : CDataBase(DEVICE_TYPE_SWITCH) {
+CConfDataSwitch::CConfDataSwitch(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_SWITCH) {
 	deserialize(pDeserializeData);
 };
 
 byte CConfDataSwitch::getSize() {
-	return CDataBase::getSize() + sizeof(_gpio);
+	return sizeof(_gpio);
 };
 
 //* Conf messages send type against traffic messages where we don't send type
 void CConfDataSwitch::serialize(byte * pData) {
-	*pData = _type;
-	pData += sizeof(_type);
 	*pData = _gpio;
 };
 
 void CConfDataSwitch::deserialize(byte * pData) {
-	_type = *pData;
-	pData += sizeof(_type);
 	_gpio = *pData;
 };
 //* ---------------------- end CConfDataSwitch --------------------------
 
 //* ---------------------- start CConfDataLight --------------------------
-CConfDataLight::CConfDataLight(byte gpio, MacID switchCanID, byte switchGPIO) : CDataBase(DEVICE_TYPE_LIGHT), _gpio(gpio), _switchMacID(switchCanID), _switchGPIO(switchGPIO) {
+CConfDataLight::CConfDataLight(byte gpio, MacID switchCanID, byte switchGPIO) : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_LIGHT), _gpio(gpio), _switchMacID(switchCanID), _switchGPIO(switchGPIO) {
 }
 
-CConfDataLight::CConfDataLight() : CDataBase(DEVICE_TYPE_LIGHT), _gpio(0), _switchMacID(0), _switchGPIO(0) {
+CConfDataLight::CConfDataLight() : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_LIGHT), _gpio(0), _switchMacID(0), _switchGPIO(0) {
 }
 
-CConfDataLight::CConfDataLight(byte * pDeserializeData) : CDataBase(DEVICE_TYPE_LIGHT) {
+CConfDataLight::CConfDataLight(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_LIGHT) {
 	deserialize(pDeserializeData);
 };
 
@@ -89,8 +85,6 @@ byte CConfDataLight::getSize() {
 
 //* Conf messages send type against traffic messages where we don't send type
 void CConfDataLight::serialize(byte * pData) {
-	*pData = _type;
-	pData += sizeof(_type);
 	*pData = _gpio;
 	pData += sizeof(_gpio);
 	*(MacID*)pData = _switchMacID;
@@ -99,8 +93,6 @@ void CConfDataLight::serialize(byte * pData) {
 };
 
 void CConfDataLight::deserialize(byte * pData) {
-	_type = *pData;
-	pData += sizeof(_type);
 	_gpio = *pData;
 	pData += sizeof(_gpio);
 	_switchMacID = *(MacID *)pData;
@@ -110,13 +102,13 @@ void CConfDataLight::deserialize(byte * pData) {
 //* ---------------------- end CConfDataLight --------------------------
 
 //* ---------------------- start CConfDataWatchdog --------------------------
-CConfDataWatchdog::CConfDataWatchdog(uint8_t to) : CDataBase(DEVICE_TYPE_WATCHDOG_TIMEOUT), _to(to) {
+CConfDataWatchdog::CConfDataWatchdog(uint8_t to) : CDataBase(TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT), _to(to) {
 }
 
-CConfDataWatchdog::CConfDataWatchdog() : CDataBase(DEVICE_TYPE_WATCHDOG_TIMEOUT), _to(to2000ms) {
+CConfDataWatchdog::CConfDataWatchdog() : CDataBase(TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT), _to(to2000ms) {
 }
 
-CConfDataWatchdog::CConfDataWatchdog(byte * pDeserializeData) : CDataBase(DEVICE_TYPE_WATCHDOG_TIMEOUT) {
+CConfDataWatchdog::CConfDataWatchdog(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT) {
 	deserialize(pDeserializeData);
 };
 
@@ -126,14 +118,10 @@ byte CConfDataWatchdog::getSize() {
 
 //* Conf messages send type against traffic messages where we don't send type
 void CConfDataWatchdog::serialize(byte * pData) {
-	*pData = _type;
-	pData += sizeof(_type);
 	*pData = _to;
 };
 
 void CConfDataWatchdog::deserialize(byte * pData) {
-	_type = *pData;
-	pData += sizeof(_type);
 	_to = (WATCHDOG_TIMEOUT) *pData;
 };
 //* ---------------------- end CConfDataWatchdog --------------------------
