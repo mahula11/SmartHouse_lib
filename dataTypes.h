@@ -17,8 +17,8 @@ const byte MSGTYPE_ALARM = 7;				//* send alarm (lights flashing, unlock locks, 
 const byte MSGTYPE_ASK_SWITCH_FOR_VALUE = 8;//* after restart canDevice, lights ask switch for values
 
 //* device types (size is 1byte)
-const byte DEVICE_TYPE_SWITCH = 1;
-const byte DEVICE_TYPE_PUSH_BUTTON = 2;
+const byte DEVICE_TYPE_SWITCH = 1; // msgtype_fromSimpleSwitch 
+const byte DEVICE_TYPE_PUSH_BUTTON = 2; //msgtype_
 const byte DEVICE_TYPE_STAIR_CASE_SWITCH = 3;
 const byte DEVICE_TYPE_LIGHT = 4;
 const byte DEVICE_TYPE_LIGHT_WITH_DIMMER = 5;
