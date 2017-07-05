@@ -82,6 +82,16 @@ void CanID::setFlag_forConfiguration() {
 	_canID += ((uint32_t)TYPE__ASK_FOR_CONF << 16);
 }
 
+bool CanID::hasFlag_fromConfiguration() {
+	byte i = 0;
+	while (idsFromConf[i] != 0) {
+		if (hasFlag(idsFromConf[i++])) {
+			return true;
+		}
+	}
+	return false;
+}
+
 bool CanID::hasFlag_fromConfNumber() {
 	return hasFlag(TYPE__FROM_CONF__COUNT);
 }

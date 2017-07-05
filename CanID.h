@@ -4,13 +4,13 @@
 
 #include "dataTypes.h"
 
+
+
 class CanID {
 public:
 	CanID();
 
 private:
-	byte getConfigPart();
-	
 	bool hasFlag(byte flag1);
 	bool hasFlag(byte flag1, byte flag2);
 	bool hasFlag(byte flag1, byte flag2, byte flag3);
@@ -18,6 +18,7 @@ private:
 public:
 	uint32_t _canID;
 	
+	byte getConfigPart();
 	void clearConfigPart();
 	void setConfigPart(byte type);
 
@@ -27,9 +28,9 @@ public:
 	void setFlag_askSwitchForValue();
 	bool hasFlag_forConfiguration();
 	void setFlag_forConfiguration();
-	//bool hasFlag_fromConfiguration();
-	//void setFlag_fromConfiguration();
 
+	bool hasFlag_fromConfiguration();
+	//void setFlag_fromConfiguration();
 	bool hasFlag_fromConfNumber();
 	void setFlag_fromConfNumber();
 	bool hasFlag_fromConfSetWatchdog();

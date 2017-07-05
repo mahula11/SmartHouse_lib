@@ -1,6 +1,6 @@
 #include "dataTypes.h"
 
-CDataBase::CDataBase(byte type) : _type(type) {
+CDataBase::CDataBase(byte type) : _type(type), _modeForEeprom(false) {
 
 }
 
@@ -8,12 +8,16 @@ CDataBase::CDataBase(byte type) : _type(type) {
 //}
 
 byte CDataBase::getSize() {
-	return sizeof(_type);
+	return _modeForEeprom ? sizeof(_type) : 0;
 }
 
 byte CDataBase::getType() {
 	return _type;
 };
+
+void CDataBase::setModeForEeprom(bool mode) {
+	_modeForEeprom = mode;
+}
 
 //* ---------------------- start CTrafficDataSwitch --------------------------
 CTrafficDataSwitch::CTrafficDataSwitch(byte gpio, byte value) : CDataBase(TYPE__FROM_SWITCH), _gpio(gpio), _value(value) {
@@ -55,15 +59,23 @@ CConfDataSwitch::CConfDataSwitch(byte * pDeserializeData) : CDataBase(TYPE__FROM
 };
 
 byte CConfDataSwitch::getSize() {
-	return sizeof(_gpio);
+	return CDataBase::getSize() + sizeof(_gpio);
 };
 
 //* Conf messages send type against traffic messages where we don't send type
 void CConfDataSwitch::serialize(byte * pData) {
+	if (_modeForEeprom) {
+		*pData = _type;
+		pData += sizeof(_type);
+	}
 	*pData = _gpio;
 };
 
 void CConfDataSwitch::deserialize(byte * pData) {
+	if (_modeForEeprom) {
+		_type = *pData;
+		pData += sizeof(_type);
+	}
 	_gpio = *pData;
 };
 //* ---------------------- end CConfDataSwitch --------------------------
@@ -85,6 +97,10 @@ byte CConfDataLight::getSize() {
 
 //* Conf messages send type against traffic messages where we don't send type
 void CConfDataLight::serialize(byte * pData) {
+	if (_modeForEeprom) {
+		*pData = _type;
+		pData += sizeof(_type);
+	}
 	*pData = _gpio;
 	pData += sizeof(_gpio);
 	*(MacID*)pData = _switchMacID;
@@ -93,6 +109,10 @@ void CConfDataLight::serialize(byte * pData) {
 };
 
 void CConfDataLight::deserialize(byte * pData) {
+	if (_modeForEeprom) {
+		_type = *pData;
+		pData += sizeof(_type);
+	}
 	_gpio = *pData;
 	pData += sizeof(_gpio);
 	_switchMacID = *(MacID *)pData;
@@ -118,10 +138,18 @@ byte CConfDataWatchdog::getSize() {
 
 //* Conf messages send type against traffic messages where we don't send type
 void CConfDataWatchdog::serialize(byte * pData) {
+	if (_modeForEeprom) {
+		*pData = _type;
+		pData += sizeof(_type);
+	}
 	*pData = _to;
 };
 
 void CConfDataWatchdog::deserialize(byte * pData) {
+	if (_modeForEeprom) {
+		_type = *pData;
+		pData += sizeof(_type);
+	}
 	_to = (WATCHDOG_TIMEOUT) *pData;
 };
 //* ---------------------- end CConfDataWatchdog --------------------------
