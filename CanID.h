@@ -39,6 +39,9 @@ public:
 	void setFlag_fromConfSetSwitch();
 	bool hasFlag_fromConfSetLight();
 	void setFlag_fromConfSetLight();
+	bool hasFlag_fromConfReset();
+	void setFlag_fromConfReset();
+
 
 	MacID getMacID();
 	//* insert MacID to CanID

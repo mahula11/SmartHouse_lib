@@ -102,11 +102,12 @@ void CanID::setFlag_fromConfNumber() {
 }
 
 bool CanID::hasFlag_fromConfSetWatchdog() {
-
+	return hasFlag(TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT);
 }
 
 void CanID::setFlag_fromConfSetWatchdog() {
-
+	bitSet(_canID, 31);				//* set extended message
+	_canID += ((uint32_t)TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT << 16);
 }
 
 bool CanID::hasFlag_fromConfSetSwitch() {
@@ -125,6 +126,15 @@ bool CanID::hasFlag_fromConfSetLight() {
 void CanID::setFlag_fromConfSetLight() {
 	bitSet(_canID, 31);				//* set extended message
 	_canID += ((uint32_t)TYPE__FROM_CONF__SET_SIMPLE_LIGHT << 16);
+}
+
+bool CanID::hasFlag_fromConfReset() {
+	return hasFlag(TYPE__FROM_CONF__RESET);
+}
+
+void CanID::setFlag_fromConfReset() {
+	bitSet(_canID, 31);				//* set extended message
+	_canID += ((uint32_t)TYPE__FROM_CONF__RESET << 16);
 }
 
 

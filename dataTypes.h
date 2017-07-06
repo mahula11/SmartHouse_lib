@@ -11,6 +11,7 @@ const byte TYPE__FROM_CONF__COUNT = 2;				//* count of configurations
 const byte TYPE__FROM_CONF__SET_SIMPLE_SWITCH = 3;  //* configuration messages for devices
 const byte TYPE__FROM_CONF__SET_SIMPLE_LIGHT = 4;
 const byte TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT = 5;
+const byte TYPE__FROM_CONF__RESET = 6;				//* send reset to processor
 const byte TYPE__FROM_SWITCH = 20;					//* switch send msg to lights
 const byte TYPE__ASK_SWITCH_FOR_VALUE = 21;			//* after restart canDevice, light ask to switch for values
 
@@ -24,6 +25,7 @@ const byte idsFromConf[] = {
 		TYPE__FROM_CONF__SET_SIMPLE_LIGHT,
 		TYPE__FROM_CONF__SET_SIMPLE_SWITCH,
 		TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT,
+		TYPE__FROM_CONF__RESET,
 		0
 };
 
@@ -133,12 +135,12 @@ public :
 	void deserialize(byte * pData);
 };
 
-//class CConfDataReset : public CDataBase {
-//public:
-//	CConfDataReset();
-//	CConfDataReset(byte * pDeserializeData);
-//
-//	byte getSize();
-//	void serialize(byte * pData);
-//	void deserialize(byte * pData);
-//};
+class CConfDataReset : public CDataBase {
+public:
+	CConfDataReset();
+	CConfDataReset(byte * pDeserializeData);
+
+	byte getSize();
+	void serialize(byte * pData);
+	void deserialize(byte * pData);
+};
