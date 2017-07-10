@@ -173,3 +173,38 @@ void CConfDataReset::serialize(byte * pData) {
 void CConfDataReset::deserialize(byte * pData) {
 };
 //* ---------------------- end CConfDataReset --------------------------
+
+//* ---------------------- start CConfDataAutoReset --------------------------
+CConfDataAutoReset::CConfDataAutoReset(uint8_t autoResetTime) : CDataBase(TYPE__FROM_CONF__SET_AUTO_RESET), _autoResetTime(autoResetTime) {
+}
+
+CConfDataAutoReset::CConfDataAutoReset() : CDataBase(TYPE__FROM_CONF__SET_AUTO_RESET) {
+}
+
+CConfDataAutoReset::CConfDataAutoReset(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__SET_AUTO_RESET) {
+	deserialize(pDeserializeData);
+};
+
+byte CConfDataAutoReset::getSize() {
+	return CDataBase::getSize() + sizeof(_autoResetTime);
+};
+
+//* Conf messages send type against traffic messages where we don't send type
+void CConfDataAutoReset::serialize(byte * pData) {
+	//CDataBase::serialize(pData);
+	if (_modeForEeprom) {
+		*pData = _type;
+		pData += sizeof(_type);
+	}
+	*pData = _autoResetTime;
+};
+
+void CConfDataAutoReset::deserialize(byte * pData) {
+	if (_modeForEeprom) {
+		_type = *pData;
+		pData += sizeof(_type);
+	}
+	_autoResetTime = (WATCHDOG_TIMEOUT)*pData;
+};
+
+//* ---------------------- end CConfDataAutoReset --------------------------

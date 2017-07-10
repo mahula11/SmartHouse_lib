@@ -12,6 +12,7 @@ const byte TYPE__FROM_CONF__SET_SIMPLE_SWITCH = 3;  //* configuration messages f
 const byte TYPE__FROM_CONF__SET_SIMPLE_LIGHT = 4;
 const byte TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT = 5;
 const byte TYPE__FROM_CONF__RESET = 6;				//* send reset to processor
+const byte TYPE__FROM_CONF__SET_AUTO_RESET = 7;     //* set time for automatic reset
 const byte TYPE__FROM_SWITCH = 20;					//* switch send msg to lights
 const byte TYPE__ASK_SWITCH_FOR_VALUE = 21;			//* after restart canDevice, light ask to switch for values
 
@@ -26,6 +27,7 @@ const byte idsFromConf[] = {
 		TYPE__FROM_CONF__SET_SIMPLE_SWITCH,
 		TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT,
 		TYPE__FROM_CONF__RESET,
+		TYPE__FROM_CONF__SET_AUTO_RESET,
 		0
 };
 
@@ -64,6 +66,10 @@ typedef byte MsgData[8];
 
 enum WATCHDOG_TIMEOUT {
 	to250ms, to500ms, to1000ms, to2000ms, to4000ms, to8000ms
+};
+
+enum AUTO_RESET_TIMES {
+	arDisable, ar10s, ar1m, ar15m, ar60m, ar2h, ar3h, ar4h, ar5h, ar6h, ar7h, ar8h
 };
 
 class CDataBase {
@@ -139,6 +145,18 @@ class CConfDataReset : public CDataBase {
 public:
 	CConfDataReset();
 	CConfDataReset(byte * pDeserializeData);
+
+	byte getSize();
+	void serialize(byte * pData);
+	void deserialize(byte * pData);
+};
+
+class CConfDataAutoReset : public CDataBase {
+public:
+	uint8_t _autoResetTime;
+	CConfDataAutoReset();
+	CConfDataAutoReset(byte * pDeserializeData);
+	CConfDataAutoReset(uint8_t autoResetTime);
 
 	byte getSize();
 	void serialize(byte * pData);

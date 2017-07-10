@@ -41,6 +41,8 @@ public:
 	void setFlag_fromConfSetLight();
 	bool hasFlag_fromConfReset();
 	void setFlag_fromConfReset();
+	bool hasFlag_fromConfAutoResetTime();
+	void setFlag_fromConfAutoResetTime();
 
 
 	MacID getMacID();

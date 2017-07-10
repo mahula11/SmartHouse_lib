@@ -137,6 +137,16 @@ void CanID::setFlag_fromConfReset() {
 	_canID += ((uint32_t)TYPE__FROM_CONF__RESET << 16);
 }
 
+bool CanID::hasFlag_fromConfAutoResetTime() {
+	return hasFlag(TYPE__FROM_CONF__SET_AUTO_RESET);
+}
+
+void CanID::setFlag_fromConfAutoResetTime() {
+	bitSet(_canID, 31);				//* set extended message
+	_canID += ((uint32_t)TYPE__FROM_CONF__SET_AUTO_RESET << 16);
+}
+
+
 
 MacID CanID::getMacID() {
 	//* vycisti IDcko od bitov, ktore su konfiguracne, ktore nie su pre identifikator
