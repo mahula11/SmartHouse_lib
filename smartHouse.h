@@ -46,17 +46,17 @@
 
 
 struct CONF {
-	MacID macAddress;
-	uint8_t watchdogTimeout;
-	uint8_t autoResetTime;
-	byte count;
+	//MacID macAddress;
+	//uint8_t watchdogTimeout;
+	//uint8_t autoResetTime;
+	//byte count;
 	CDataBase ** ppConfData;
 };
 
 class SmartHouse {
 public:
 	static CONF * newConf(byte count);
-	static CONF * newConf(byte count, MacID macAddress);
+	//static CONF * newConf(byte count, MacID macAddress);
 };
 
 #endif

@@ -69,7 +69,7 @@ enum WATCHDOG_TIMEOUT {
 };
 
 enum AUTO_RESET_TIMES {
-	arDisable, ar10s, ar1m, ar15m, ar60m, ar2h, ar3h, ar4h, ar5h, ar6h, ar7h, ar8h
+	arDisable, ar10s, ar1m, ar15m, ar1h, ar2h, ar3h, ar4h, ar5h, ar6h, ar7h, ar8h
 };
 
 class CDataBase {
