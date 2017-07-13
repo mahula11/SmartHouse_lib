@@ -2,6 +2,8 @@
 
 #include <arduino.h>
 
+#include "CanID.h"
+
 //#include "smartHouse.h"
 
 //* messages types (size is 1byte, part of CanID (16-23bits))
@@ -76,6 +78,7 @@ class CDataBase {
 public:
 	byte _type;
 	bool _modeForEeprom;
+	CanID _destCanID;
 
 	CDataBase(byte type);
 	void setModeForEeprom(bool mode);

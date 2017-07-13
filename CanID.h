@@ -2,9 +2,9 @@
 
 #include <Arduino.h>
 
-#include "dataTypes.h"
+//#include "dataTypes.h"
 
-
+typedef uint16_t MacID;		//* MediaAccessControl address - Netword address of device
 
 class CanID {
 public:

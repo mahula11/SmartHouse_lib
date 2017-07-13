@@ -1,4 +1,5 @@
 ﻿#include "CanID.h"
+#include "dataTypes.h"
 
 
 CanID::CanID() {

@@ -4,8 +4,9 @@
 
 #include <Arduino.h>
 
-#include "dataTypes.h"
 #include "CanID.h"
+#include "dataTypes.h"
+
 
 #define DEBUG_BUILD
 #ifdef DEBUG_BUILD
