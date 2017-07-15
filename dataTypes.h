@@ -80,12 +80,14 @@ public:
 	bool _modeForEeprom;
 	CanID _destCanID;
 
-	CDataBase(byte type);
+	CDataBase(byte type, MacID macId);
 	void setModeForEeprom(bool mode);
 
 	virtual byte getSize();
 	virtual void serialize(byte * pData) = 0;
 	virtual void deserialize(byte * pData) = 0;
+
+	//void sendMsg();
 
 	byte getType();
 };
@@ -95,8 +97,34 @@ public:
 	byte _gpio;
 	byte _value;
 
-	CTrafficDataSwitch(byte gpio, byte value);
+	CTrafficDataSwitch(MacID macId, byte gpio, byte value);
 	CTrafficDataSwitch(byte * pDeserializeData);
+
+	byte getSize();
+	void serialize(byte * pData);
+	void deserialize(byte * pData);
+};
+
+class CTrafficDataAskSwitchForData : public CDataBase {
+public:
+	byte _gpio;
+	//byte _value;
+
+	CTrafficDataAskSwitchForData(MacID macId, byte gpio);
+	CTrafficDataAskSwitchForData(byte * pDeserializeData);
+
+	byte getSize();
+	void serialize(byte * pData);
+	void deserialize(byte * pData);
+};
+
+class CConfDataCount : public CDataBase {
+public:
+	byte _count;
+
+	//CConfDataCount();
+	CConfDataCount(MacID macId, byte count);
+	CConfDataCount(byte * pDeserializeData);
 
 	byte getSize();
 	void serialize(byte * pData);
@@ -108,7 +136,7 @@ public:
 	byte _gpio;
 
 	CConfDataSwitch();
-	CConfDataSwitch(byte gpio);
+	CConfDataSwitch(MacID macId, byte gpio);
 	CConfDataSwitch(byte * pDeserializeData);
 
 	byte getSize();
@@ -124,7 +152,7 @@ public:
 
 	CConfDataLight();
 	CConfDataLight(byte * pDeserializeData);
-	CConfDataLight(byte gpio, MacID switchCanID, byte switchGPIO);
+	CConfDataLight(MacID macId, byte gpio, MacID switchCanID, byte switchGPIO);
 
 	byte getSize();
 	void serialize(byte * pData);
@@ -135,9 +163,9 @@ class CConfDataWatchdog : public CDataBase {
 public :
 	uint8_t _to; //* WATCHDOG_TIMEOUT
 
-	CConfDataWatchdog();
+	//CConfDataWatchdog();
 	CConfDataWatchdog(byte * pDeserializeData);
-	CConfDataWatchdog(uint8_t to);
+	CConfDataWatchdog(MacID macId, uint8_t to);
 
 	byte getSize();
 	void serialize(byte * pData);
@@ -146,7 +174,7 @@ public :
 
 class CConfDataReset : public CDataBase {
 public:
-	CConfDataReset();
+	CConfDataReset(MacID macId);
 	CConfDataReset(byte * pDeserializeData);
 
 	byte getSize();
@@ -157,9 +185,9 @@ public:
 class CConfDataAutoReset : public CDataBase {
 public:
 	uint8_t _autoResetTime;
-	CConfDataAutoReset();
+	//CConfDataAutoReset();
 	CConfDataAutoReset(byte * pDeserializeData);
-	CConfDataAutoReset(uint8_t autoResetTime);
+	CConfDataAutoReset(MacID macId, uint8_t autoResetTime);
 
 	byte getSize();
 	void serialize(byte * pData);

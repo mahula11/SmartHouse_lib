@@ -1,7 +1,14 @@
+
+
 #include "dataTypes.h"
 
-CDataBase::CDataBase(byte type) : _type(type), _modeForEeprom(false) {
 
+//* ---------------------- start CDataBase --------------------------
+
+CDataBase::CDataBase(byte type, MacID macId) : _type(type), _modeForEeprom(false) {
+	_destCanID.setMacID(macId);
+	_destCanID.setFlagExtended();
+	_destCanID.setType(type);
 }
 
 //CDataBase::CDataBase() : _type(0) {
@@ -19,12 +26,26 @@ void CDataBase::setModeForEeprom(bool mode) {
 	_modeForEeprom = mode;
 }
 
+//void CDataBase::sendMsg() {
+//	byte data[8];
+//	serialize(data);
+//	INT8U ret = CAN0.sendMsgBuf(canId, 1, cdb.getSize(), data);
+//#ifdef DEBUG_BUILD
+//	if (ret == CAN_OK) {
+//		DEBUG(F("Send msg CanID:") << canId << ",deviceType:" << cdb.getType());
+//	} else {
+//		DEBUG(F("Failure when send CanID:") << canId << F(",error:") << ret);
+//	}
+//#endif
+//}
+//* ---------------------- end CDataBase --------------------------
+
 //* ---------------------- start CTrafficDataSwitch --------------------------
-CTrafficDataSwitch::CTrafficDataSwitch(byte gpio, byte value) : CDataBase(TYPE__FROM_SWITCH), _gpio(gpio), _value(value) {
+CTrafficDataSwitch::CTrafficDataSwitch(MacID macId, byte gpio, byte value) : CDataBase(TYPE__FROM_SWITCH, macId), _gpio(gpio), _value(value) {
 }
 
 //CTrafficDataSwitch() : CDataBase(DEVICE_TYPE_SWITCH), _gpio(0), _value(0) {};
-CTrafficDataSwitch::CTrafficDataSwitch(byte * pDeserializeData) : CDataBase(TYPE__FROM_SWITCH) {
+CTrafficDataSwitch::CTrafficDataSwitch(byte * pDeserializeData) : CDataBase(TYPE__FROM_SWITCH, 0) {
 	deserialize(pDeserializeData);
 }
 
@@ -47,14 +68,70 @@ void CTrafficDataSwitch::deserialize(byte * pData) {
 };
 //* ---------------------- end CTrafficDataSwitch --------------------------
 
+
+//* ---------------------- start CTrafficDataAskSwitchForData --------------------------
+CTrafficDataAskSwitchForData::CTrafficDataAskSwitchForData(MacID macId, byte gpio) : CDataBase(TYPE__ASK_SWITCH_FOR_VALUE, macId), _gpio(gpio) {
+}
+
+//CTrafficDataSwitch() : CDataBase(DEVICE_TYPE_SWITCH), _gpio(0), _value(0) {};
+CTrafficDataAskSwitchForData::CTrafficDataAskSwitchForData(byte * pDeserializeData) : CDataBase(TYPE__ASK_SWITCH_FOR_VALUE, 0) {
+	deserialize(pDeserializeData);
+}
+
+byte CTrafficDataAskSwitchForData::getSize() {
+	return sizeof(_gpio);
+};
+
+//* traffic messages doesn't send type. type is in CanID against Conf messages where we send type of message
+void CTrafficDataAskSwitchForData::serialize(byte * pData) {
+	*pData = _gpio;
+};
+
+//* traffic messages doesn't send type. type is in CanID against Conf messages where we send type of message
+void CTrafficDataAskSwitchForData::deserialize(byte * pData) {
+	_gpio = *pData;
+};
+//* ---------------------- end CTrafficDataAskSwitchForData --------------------------
+
+//* ---------------------- start CConfDataCount --------------------------
+CConfDataCount::CConfDataCount(MacID macId, byte count) : CDataBase(TYPE__FROM_CONF__COUNT, macId), _count(_count) {
+}
+
+CConfDataCount::CConfDataCount(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__COUNT, 0) {
+	deserialize(pDeserializeData);
+};
+
+byte CConfDataCount::getSize() {
+	return CDataBase::getSize() + sizeof(_count);
+};
+
+//* Conf messages send type against traffic messages where we don't send type
+void CConfDataCount::serialize(byte * pData) {
+	if (_modeForEeprom) {
+		*pData = _type;
+		pData += sizeof(_type);
+	}
+	*pData = _count;
+};
+
+void CConfDataCount::deserialize(byte * pData) {
+	if (_modeForEeprom) {
+		_type = *pData;
+		pData += sizeof(_type);
+	}
+	_count = *pData;
+};
+//* ---------------------- end CConfDataCount --------------------------
+
+
 //* ---------------------- start CConfDataSwitch --------------------------
-CConfDataSwitch::CConfDataSwitch(byte gpio) : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_SWITCH), _gpio(gpio) {
+CConfDataSwitch::CConfDataSwitch(MacID macId, byte gpio) : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_SWITCH, macId), _gpio(gpio) {
 }
 
-CConfDataSwitch::CConfDataSwitch() : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_SWITCH), _gpio(0) {
+CConfDataSwitch::CConfDataSwitch() : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_SWITCH, 0), _gpio(0) {
 }
 
-CConfDataSwitch::CConfDataSwitch(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_SWITCH) {
+CConfDataSwitch::CConfDataSwitch(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_SWITCH, 0) {
 	deserialize(pDeserializeData);
 };
 
@@ -81,13 +158,13 @@ void CConfDataSwitch::deserialize(byte * pData) {
 //* ---------------------- end CConfDataSwitch --------------------------
 
 //* ---------------------- start CConfDataLight --------------------------
-CConfDataLight::CConfDataLight(byte gpio, MacID switchCanID, byte switchGPIO) : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_LIGHT), _gpio(gpio), _switchMacID(switchCanID), _switchGPIO(switchGPIO) {
+CConfDataLight::CConfDataLight(MacID macId, byte gpio, MacID switchCanID, byte switchGPIO) : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_LIGHT, macId), _gpio(gpio), _switchMacID(switchCanID), _switchGPIO(switchGPIO) {
 }
 
-CConfDataLight::CConfDataLight() : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_LIGHT), _gpio(0), _switchMacID(0), _switchGPIO(0) {
+CConfDataLight::CConfDataLight() : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_LIGHT, 0), _gpio(0), _switchMacID(0), _switchGPIO(0) {
 }
 
-CConfDataLight::CConfDataLight(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_LIGHT) {
+CConfDataLight::CConfDataLight(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_LIGHT, 0) {
 	deserialize(pDeserializeData);
 };
 
@@ -122,13 +199,13 @@ void CConfDataLight::deserialize(byte * pData) {
 //* ---------------------- end CConfDataLight --------------------------
 
 //* ---------------------- start CConfDataWatchdog --------------------------
-CConfDataWatchdog::CConfDataWatchdog(uint8_t to) : CDataBase(TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT), _to(to) {
+CConfDataWatchdog::CConfDataWatchdog(MacID macId, uint8_t to) : CDataBase(TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT, macId), _to(to) {
 }
 
-CConfDataWatchdog::CConfDataWatchdog() : CDataBase(TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT), _to(to2000ms) {
-}
+//CConfDataWatchdog::CConfDataWatchdog() : CDataBase(TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT), _to(to2000ms) {
+//}
 
-CConfDataWatchdog::CConfDataWatchdog(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT) {
+CConfDataWatchdog::CConfDataWatchdog(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT, 0) {
 	deserialize(pDeserializeData);
 };
 
@@ -155,10 +232,10 @@ void CConfDataWatchdog::deserialize(byte * pData) {
 //* ---------------------- end CConfDataWatchdog --------------------------
 
 //* ---------------------- start CConfDataReset --------------------------
-CConfDataReset::CConfDataReset() : CDataBase(TYPE__FROM_CONF__RESET) {
+CConfDataReset::CConfDataReset(MacID macId) : CDataBase(TYPE__FROM_CONF__RESET, macId) {
 }
 
-CConfDataReset::CConfDataReset(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__RESET) {
+CConfDataReset::CConfDataReset(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__RESET, 0) {
 	deserialize(pDeserializeData);
 };
 
@@ -175,13 +252,13 @@ void CConfDataReset::deserialize(byte * pData) {
 //* ---------------------- end CConfDataReset --------------------------
 
 //* ---------------------- start CConfDataAutoReset --------------------------
-CConfDataAutoReset::CConfDataAutoReset(uint8_t autoResetTime) : CDataBase(TYPE__FROM_CONF__SET_AUTO_RESET), _autoResetTime(autoResetTime) {
+CConfDataAutoReset::CConfDataAutoReset(MacID macId, uint8_t autoResetTime) : CDataBase(TYPE__FROM_CONF__SET_AUTO_RESET, macId), _autoResetTime(autoResetTime) {
 }
 
-CConfDataAutoReset::CConfDataAutoReset() : CDataBase(TYPE__FROM_CONF__SET_AUTO_RESET) {
-}
+//CConfDataAutoReset::CConfDataAutoReset() : CDataBase(TYPE__FROM_CONF__SET_AUTO_RESET) {
+//}
 
-CConfDataAutoReset::CConfDataAutoReset(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__SET_AUTO_RESET) {
+CConfDataAutoReset::CConfDataAutoReset(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__SET_AUTO_RESET, 0) {
 	deserialize(pDeserializeData);
 };
 

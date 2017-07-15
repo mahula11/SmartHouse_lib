@@ -22,27 +22,31 @@ public:
 	void clearConfigPart();
 	void setConfigPart(byte type);
 
+	void setFlagExtended();
+	void setFlagRemote();
+	void setType(uint8_t type);
+
 	bool hasFlag_fromSwitch();
-	void setFlag_fromSwitch();
+	//void setFlag_fromSwitch();
 	bool hasFlag_askSwitchForValue();
-	void setFlag_askSwitchForValue();
+	//void setFlag_askSwitchForValue();
 	bool hasFlag_forConfiguration();
-	void setFlag_forConfiguration();
+	//void setFlag_forConfiguration();
 
 	bool hasFlag_fromConfiguration();
 	//void setFlag_fromConfiguration();
 	bool hasFlag_fromConfNumber();
-	void setFlag_fromConfNumber();
+	//void setFlag_fromConfNumber();
 	bool hasFlag_fromConfSetWatchdog();
-	void setFlag_fromConfSetWatchdog();
+	//void setFlag_fromConfSetWatchdog();
 	bool hasFlag_fromConfSetSwitch();
-	void setFlag_fromConfSetSwitch();
+	//void setFlag_fromConfSetSwitch();
 	bool hasFlag_fromConfSetLight();
-	void setFlag_fromConfSetLight();
+	//void setFlag_fromConfSetLight();
 	bool hasFlag_fromConfReset();
-	void setFlag_fromConfReset();
+	//void setFlag_fromConfReset();
 	bool hasFlag_fromConfAutoResetTime();
-	void setFlag_fromConfAutoResetTime();
+	//void setFlag_fromConfAutoResetTime();
 
 
 	MacID getMacID();
