@@ -41,27 +41,27 @@ void CDataBase::setModeForEeprom(bool mode) {
 //* ---------------------- end CDataBase --------------------------
 
 //* ---------------------- start CTrafficDataSwitch --------------------------
-CTrafficDataSwitch::CTrafficDataSwitch(MacID macId, byte gpio, byte value) : CDataBase(TYPE__FROM_SWITCH, macId), _gpio(gpio), _value(value) {
+CTrafficMsg_fromSwitch::CTrafficMsg_fromSwitch(MacID macId, byte gpio, byte value) : CDataBase(TYPE__FROM_SWITCH, macId), _gpio(gpio), _value(value) {
 }
 
 //CTrafficDataSwitch() : CDataBase(DEVICE_TYPE_SWITCH), _gpio(0), _value(0) {};
-CTrafficDataSwitch::CTrafficDataSwitch(byte * pDeserializeData) : CDataBase(TYPE__FROM_SWITCH, 0) {
+CTrafficMsg_fromSwitch::CTrafficMsg_fromSwitch(byte * pDeserializeData) : CDataBase(TYPE__FROM_SWITCH, 0) {
 	deserialize(pDeserializeData);
 }
 
-byte CTrafficDataSwitch::getSize() {
+byte CTrafficMsg_fromSwitch::getSize() {
 	return sizeof(_gpio) + sizeof(_value);
 };
 
 //* traffic messages doesn't send type. type is in CanID against Conf messages where we send type of message
-void CTrafficDataSwitch::serialize(byte * pData) {
+void CTrafficMsg_fromSwitch::serialize(byte * pData) {
 	*pData = _gpio;
 	pData += sizeof(_gpio);
 	*pData = _value;
 };
 
 //* traffic messages doesn't send type. type is in CanID against Conf messages where we send type of message
-void CTrafficDataSwitch::deserialize(byte * pData) {
+void CTrafficMsg_fromSwitch::deserialize(byte * pData) {
 	_gpio = *pData;
 	pData += sizeof(_gpio);
 	_value = *pData;
@@ -70,43 +70,43 @@ void CTrafficDataSwitch::deserialize(byte * pData) {
 
 
 //* ---------------------- start CTrafficDataAskSwitchForData --------------------------
-CTrafficDataAskSwitchForData::CTrafficDataAskSwitchForData(MacID macId, byte gpio) : CDataBase(TYPE__ASK_SWITCH_FOR_VALUE, macId), _gpio(gpio) {
+CTrafficMsg_askSwitchForData::CTrafficMsg_askSwitchForData(MacID macId, byte gpio) : CDataBase(TYPE__ASK_SWITCH_FOR_VALUE, macId), _gpio(gpio) {
 }
 
 //CTrafficDataSwitch() : CDataBase(DEVICE_TYPE_SWITCH), _gpio(0), _value(0) {};
-CTrafficDataAskSwitchForData::CTrafficDataAskSwitchForData(byte * pDeserializeData) : CDataBase(TYPE__ASK_SWITCH_FOR_VALUE, 0) {
+CTrafficMsg_askSwitchForData::CTrafficMsg_askSwitchForData(byte * pDeserializeData) : CDataBase(TYPE__ASK_SWITCH_FOR_VALUE, 0) {
 	deserialize(pDeserializeData);
 }
 
-byte CTrafficDataAskSwitchForData::getSize() {
+byte CTrafficMsg_askSwitchForData::getSize() {
 	return sizeof(_gpio);
 };
 
 //* traffic messages doesn't send type. type is in CanID against Conf messages where we send type of message
-void CTrafficDataAskSwitchForData::serialize(byte * pData) {
+void CTrafficMsg_askSwitchForData::serialize(byte * pData) {
 	*pData = _gpio;
 };
 
 //* traffic messages doesn't send type. type is in CanID against Conf messages where we send type of message
-void CTrafficDataAskSwitchForData::deserialize(byte * pData) {
+void CTrafficMsg_askSwitchForData::deserialize(byte * pData) {
 	_gpio = *pData;
 };
 //* ---------------------- end CTrafficDataAskSwitchForData --------------------------
 
 //* ---------------------- start CConfDataCount --------------------------
-CConfDataCount::CConfDataCount(MacID macId, byte count) : CDataBase(TYPE__FROM_CONF__COUNT, macId), _count(_count) {
+CConfMsg_numOfConf::CConfMsg_numOfConf(MacID macId, byte count) : CDataBase(TYPE__FROM_CONF__COUNT, macId), _count(_count) {
 }
 
-CConfDataCount::CConfDataCount(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__COUNT, 0) {
+CConfMsg_numOfConf::CConfMsg_numOfConf(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__COUNT, 0) {
 	deserialize(pDeserializeData);
 };
 
-byte CConfDataCount::getSize() {
+byte CConfMsg_numOfConf::getSize() {
 	return CDataBase::getSize() + sizeof(_count);
 };
 
 //* Conf messages send type against traffic messages where we don't send type
-void CConfDataCount::serialize(byte * pData) {
+void CConfMsg_numOfConf::serialize(byte * pData) {
 	if (_modeForEeprom) {
 		*pData = _type;
 		pData += sizeof(_type);
@@ -114,7 +114,7 @@ void CConfDataCount::serialize(byte * pData) {
 	*pData = _count;
 };
 
-void CConfDataCount::deserialize(byte * pData) {
+void CConfMsg_numOfConf::deserialize(byte * pData) {
 	if (_modeForEeprom) {
 		_type = *pData;
 		pData += sizeof(_type);
@@ -125,22 +125,22 @@ void CConfDataCount::deserialize(byte * pData) {
 
 
 //* ---------------------- start CConfDataSwitch --------------------------
-CConfDataSwitch::CConfDataSwitch(MacID macId, byte gpio) : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_SWITCH, macId), _gpio(gpio) {
+CConfMsg_switch::CConfMsg_switch(MacID macId, byte gpio) : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_SWITCH, macId), _gpio(gpio) {
 }
 
-CConfDataSwitch::CConfDataSwitch() : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_SWITCH, 0), _gpio(0) {
+CConfMsg_switch::CConfMsg_switch() : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_SWITCH, 0), _gpio(0) {
 }
 
-CConfDataSwitch::CConfDataSwitch(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_SWITCH, 0) {
+CConfMsg_switch::CConfMsg_switch(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_SWITCH, 0) {
 	deserialize(pDeserializeData);
 };
 
-byte CConfDataSwitch::getSize() {
+byte CConfMsg_switch::getSize() {
 	return CDataBase::getSize() + sizeof(_gpio);
 };
 
 //* Conf messages send type against traffic messages where we don't send type
-void CConfDataSwitch::serialize(byte * pData) {
+void CConfMsg_switch::serialize(byte * pData) {
 	if (_modeForEeprom) {
 		*pData = _type;
 		pData += sizeof(_type);
@@ -148,7 +148,7 @@ void CConfDataSwitch::serialize(byte * pData) {
 	*pData = _gpio;
 };
 
-void CConfDataSwitch::deserialize(byte * pData) {
+void CConfMsg_switch::deserialize(byte * pData) {
 	if (_modeForEeprom) {
 		_type = *pData;
 		pData += sizeof(_type);
@@ -158,22 +158,22 @@ void CConfDataSwitch::deserialize(byte * pData) {
 //* ---------------------- end CConfDataSwitch --------------------------
 
 //* ---------------------- start CConfDataLight --------------------------
-CConfDataLight::CConfDataLight(MacID macId, byte gpio, MacID switchCanID, byte switchGPIO) : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_LIGHT, macId), _gpio(gpio), _switchMacID(switchCanID), _switchGPIO(switchGPIO) {
+CConfMsg_light::CConfMsg_light(MacID macId, byte gpio, MacID switchCanID, byte switchGPIO) : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_LIGHT, macId), _gpio(gpio), _switchMacID(switchCanID), _switchGPIO(switchGPIO) {
 }
 
-CConfDataLight::CConfDataLight() : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_LIGHT, 0), _gpio(0), _switchMacID(0), _switchGPIO(0) {
+CConfMsg_light::CConfMsg_light() : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_LIGHT, 0), _gpio(0), _switchMacID(0), _switchGPIO(0) {
 }
 
-CConfDataLight::CConfDataLight(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_LIGHT, 0) {
+CConfMsg_light::CConfMsg_light(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_LIGHT, 0) {
 	deserialize(pDeserializeData);
 };
 
-byte CConfDataLight::getSize() {
+byte CConfMsg_light::getSize() {
 	return CDataBase::getSize() + sizeof(_gpio) + sizeof(_switchMacID) + sizeof(_switchGPIO);
 };
 
 //* Conf messages send type against traffic messages where we don't send type
-void CConfDataLight::serialize(byte * pData) {
+void CConfMsg_light::serialize(byte * pData) {
 	if (_modeForEeprom) {
 		*pData = _type;
 		pData += sizeof(_type);
@@ -185,7 +185,7 @@ void CConfDataLight::serialize(byte * pData) {
 	*pData = _switchGPIO;
 };
 
-void CConfDataLight::deserialize(byte * pData) {
+void CConfMsg_light::deserialize(byte * pData) {
 	if (_modeForEeprom) {
 		_type = *pData;
 		pData += sizeof(_type);
@@ -199,22 +199,22 @@ void CConfDataLight::deserialize(byte * pData) {
 //* ---------------------- end CConfDataLight --------------------------
 
 //* ---------------------- start CConfDataWatchdog --------------------------
-CConfDataWatchdog::CConfDataWatchdog(MacID macId, uint8_t to) : CDataBase(TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT, macId), _to(to) {
+CConfMsg_watchdog::CConfMsg_watchdog(MacID macId, uint8_t to) : CDataBase(TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT, macId), _to(to) {
 }
 
 //CConfDataWatchdog::CConfDataWatchdog() : CDataBase(TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT), _to(to2000ms) {
 //}
 
-CConfDataWatchdog::CConfDataWatchdog(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT, 0) {
+CConfMsg_watchdog::CConfMsg_watchdog(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT, 0) {
 	deserialize(pDeserializeData);
 };
 
-byte CConfDataWatchdog::getSize() {
+byte CConfMsg_watchdog::getSize() {
 	return CDataBase::getSize() + sizeof(_to);
 };
 
 //* Conf messages send type against traffic messages where we don't send type
-void CConfDataWatchdog::serialize(byte * pData) {
+void CConfMsg_watchdog::serialize(byte * pData) {
 	if (_modeForEeprom) {
 		*pData = _type;
 		pData += sizeof(_type);
@@ -222,7 +222,7 @@ void CConfDataWatchdog::serialize(byte * pData) {
 	*pData = _to;
 };
 
-void CConfDataWatchdog::deserialize(byte * pData) {
+void CConfMsg_watchdog::deserialize(byte * pData) {
 	if (_modeForEeprom) {
 		_type = *pData;
 		pData += sizeof(_type);
@@ -232,42 +232,42 @@ void CConfDataWatchdog::deserialize(byte * pData) {
 //* ---------------------- end CConfDataWatchdog --------------------------
 
 //* ---------------------- start CConfDataReset --------------------------
-CConfDataReset::CConfDataReset(MacID macId) : CDataBase(TYPE__FROM_CONF__RESET, macId) {
+CConfMsg_reset::CConfMsg_reset(MacID macId) : CDataBase(TYPE__FROM_CONF__RESET, macId) {
 }
 
-CConfDataReset::CConfDataReset(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__RESET, 0) {
+CConfMsg_reset::CConfMsg_reset(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__RESET, 0) {
 	deserialize(pDeserializeData);
 };
 
-byte CConfDataReset::getSize() {
+byte CConfMsg_reset::getSize() {
 	return CDataBase::getSize();
 };
 
 //* Conf messages send type against traffic messages where we don't send type
-void CConfDataReset::serialize(byte * pData) {
+void CConfMsg_reset::serialize(byte * pData) {
 };
 
-void CConfDataReset::deserialize(byte * pData) {
+void CConfMsg_reset::deserialize(byte * pData) {
 };
 //* ---------------------- end CConfDataReset --------------------------
 
 //* ---------------------- start CConfDataAutoReset --------------------------
-CConfDataAutoReset::CConfDataAutoReset(MacID macId, uint8_t autoResetTime) : CDataBase(TYPE__FROM_CONF__SET_AUTO_RESET, macId), _autoResetTime(autoResetTime) {
+CConfMsg_autoReset::CConfMsg_autoReset(MacID macId, uint8_t autoResetTime) : CDataBase(TYPE__FROM_CONF__SET_AUTO_RESET, macId), _autoResetTime(autoResetTime) {
 }
 
 //CConfDataAutoReset::CConfDataAutoReset() : CDataBase(TYPE__FROM_CONF__SET_AUTO_RESET) {
 //}
 
-CConfDataAutoReset::CConfDataAutoReset(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__SET_AUTO_RESET, 0) {
+CConfMsg_autoReset::CConfMsg_autoReset(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__SET_AUTO_RESET, 0) {
 	deserialize(pDeserializeData);
 };
 
-byte CConfDataAutoReset::getSize() {
+byte CConfMsg_autoReset::getSize() {
 	return CDataBase::getSize() + sizeof(_autoResetTime);
 };
 
 //* Conf messages send type against traffic messages where we don't send type
-void CConfDataAutoReset::serialize(byte * pData) {
+void CConfMsg_autoReset::serialize(byte * pData) {
 	//CDataBase::serialize(pData);
 	if (_modeForEeprom) {
 		*pData = _type;
@@ -276,7 +276,7 @@ void CConfDataAutoReset::serialize(byte * pData) {
 	*pData = _autoResetTime;
 };
 
-void CConfDataAutoReset::deserialize(byte * pData) {
+void CConfMsg_autoReset::deserialize(byte * pData) {
 	if (_modeForEeprom) {
 		_type = *pData;
 		pData += sizeof(_type);
@@ -285,3 +285,24 @@ void CConfDataAutoReset::deserialize(byte * pData) {
 };
 
 //* ---------------------- end CConfDataAutoReset --------------------------
+
+//* ---------------------- start CConfMsg_askForConfiguration --------------------------
+CConfMsg_askForConfiguration::CConfMsg_askForConfiguration(MacID macId) : CDataBase(TYPE__ASK_FOR_CONF, macId) {
+	_destCanID.setFlagRemote();
+}
+
+CConfMsg_askForConfiguration::CConfMsg_askForConfiguration(byte * pDeserializeData) : CDataBase(TYPE__ASK_FOR_CONF, 0) {
+	deserialize(pDeserializeData);
+};
+
+byte CConfMsg_askForConfiguration::getSize() {
+	return CDataBase::getSize();
+};
+
+//* Conf messages send type against traffic messages where we don't send type
+void CConfMsg_askForConfiguration::serialize(byte * pData) {
+};
+
+void CConfMsg_askForConfiguration::deserialize(byte * pData) {
+};
+//* ---------------------- end CConfDataReset --------------------------

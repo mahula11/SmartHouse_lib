@@ -92,102 +92,113 @@ public:
 	byte getType();
 };
 
-class CTrafficDataSwitch : public CDataBase {
+class CTrafficMsg_fromSwitch : public CDataBase {
 public:
 	byte _gpio;
 	byte _value;
 
-	CTrafficDataSwitch(MacID macId, byte gpio, byte value);
-	CTrafficDataSwitch(byte * pDeserializeData);
+	CTrafficMsg_fromSwitch(MacID macId, byte gpio, byte value);
+	CTrafficMsg_fromSwitch(byte * pDeserializeData);
 
 	byte getSize();
 	void serialize(byte * pData);
 	void deserialize(byte * pData);
 };
 
-class CTrafficDataAskSwitchForData : public CDataBase {
+class CTrafficMsg_askSwitchForData : public CDataBase {
 public:
 	byte _gpio;
 	//byte _value;
 
-	CTrafficDataAskSwitchForData(MacID macId, byte gpio);
-	CTrafficDataAskSwitchForData(byte * pDeserializeData);
+	CTrafficMsg_askSwitchForData(MacID macId, byte gpio);
+	CTrafficMsg_askSwitchForData(byte * pDeserializeData);
 
 	byte getSize();
 	void serialize(byte * pData);
 	void deserialize(byte * pData);
 };
 
-class CConfDataCount : public CDataBase {
+class CConfMsg_numOfConf : public CDataBase {
 public:
 	byte _count;
 
 	//CConfDataCount();
-	CConfDataCount(MacID macId, byte count);
-	CConfDataCount(byte * pDeserializeData);
+	CConfMsg_numOfConf(MacID macId, byte count);
+	CConfMsg_numOfConf(byte * pDeserializeData);
 
 	byte getSize();
 	void serialize(byte * pData);
 	void deserialize(byte * pData);
 };
 
-class CConfDataSwitch : public CDataBase {
+class CConfMsg_switch : public CDataBase {
 public:
 	byte _gpio;
 
-	CConfDataSwitch();
-	CConfDataSwitch(MacID macId, byte gpio);
-	CConfDataSwitch(byte * pDeserializeData);
+	CConfMsg_switch();
+	CConfMsg_switch(MacID macId, byte gpio);
+	CConfMsg_switch(byte * pDeserializeData);
 
 	byte getSize();
 	void serialize(byte * pData);
 	void deserialize(byte * pData);
 };
 
-class CConfDataLight : public CDataBase {
+class CConfMsg_light : public CDataBase {
 public:
 	byte _gpio;
 	MacID _switchMacID;
 	byte _switchGPIO;
 
-	CConfDataLight();
-	CConfDataLight(byte * pDeserializeData);
-	CConfDataLight(MacID macId, byte gpio, MacID switchCanID, byte switchGPIO);
+	CConfMsg_light();
+	CConfMsg_light(byte * pDeserializeData);
+	CConfMsg_light(MacID macId, byte gpio, MacID switchCanID, byte switchGPIO);
 
 	byte getSize();
 	void serialize(byte * pData);
 	void deserialize(byte * pData);
 };
 
-class CConfDataWatchdog : public CDataBase {
+class CConfMsg_watchdog : public CDataBase {
 public :
 	uint8_t _to; //* WATCHDOG_TIMEOUT
 
 	//CConfDataWatchdog();
-	CConfDataWatchdog(byte * pDeserializeData);
-	CConfDataWatchdog(MacID macId, uint8_t to);
+	CConfMsg_watchdog(byte * pDeserializeData);
+	CConfMsg_watchdog(MacID macId, uint8_t to);
 
 	byte getSize();
 	void serialize(byte * pData);
 	void deserialize(byte * pData);
 };
 
-class CConfDataReset : public CDataBase {
+class CConfMsg_reset : public CDataBase {
 public:
-	CConfDataReset(MacID macId);
-	CConfDataReset(byte * pDeserializeData);
+	CConfMsg_reset(MacID macId);
+	CConfMsg_reset(byte * pDeserializeData);
 
 	byte getSize();
 	void serialize(byte * pData);
 	void deserialize(byte * pData);
 };
 
-class CConfDataAutoReset : public CDataBase {
+class CConfMsg_autoReset : public CDataBase {
 public:
 	uint8_t _autoResetTime;
 	//CConfDataAutoReset();
-	CConfDataAutoReset(byte * pDeserializeData);
-	CConfDataAutoReset(MacID macId, uint8_t autoResetTime);
+	CConfMsg_autoReset(byte * pDeserializeData);
+	CConfMsg_autoReset(MacID macId, uint8_t autoResetTime);
+
+	byte getSize();
+	void serialize(byte * pData);
+	void deserialize(byte * pData);
+};
+
+
+class CConfMsg_askForConfiguration : public CDataBase {
+public:
+	CConfMsg_askForConfiguration(MacID macId);
+	CConfMsg_askForConfiguration(byte * pDeserializeData);
 
 	byte getSize();
 	void serialize(byte * pData);
