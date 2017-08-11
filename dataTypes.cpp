@@ -93,8 +93,8 @@ void CTrafficMsg_askSwitchForData::deserialize(byte * pData) {
 };
 //* ---------------------- end CTrafficDataAskSwitchForData --------------------------
 
-//* ---------------------- start CConfDataCount --------------------------
-CConfMsg_numOfConf::CConfMsg_numOfConf(MacID macId, byte count) : CDataBase(TYPE__FROM_CONF__COUNT, macId), _count(_count) {
+//* ---------------------- start CConfMsg_numOfConf --------------------------
+CConfMsg_numOfConf::CConfMsg_numOfConf(MacID macId, byte count) : CDataBase(TYPE__FROM_CONF__COUNT, macId), _count(count) {
 }
 
 CConfMsg_numOfConf::CConfMsg_numOfConf(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__COUNT, 0) {
@@ -121,7 +121,7 @@ void CConfMsg_numOfConf::deserialize(byte * pData) {
 	}
 	_count = *pData;
 };
-//* ---------------------- end CConfDataCount --------------------------
+//* ---------------------- end CConfMsg_numOfConf --------------------------
 
 
 //* ---------------------- start CConfDataSwitch --------------------------
