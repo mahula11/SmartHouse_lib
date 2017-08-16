@@ -9,6 +9,7 @@ typedef uint16_t MacID;		//* MediaAccessControl address - Netword address of dev
 class CanID {
 public:
 	CanID();
+	CanID(MacID macID);
 
 private:
 	bool hasFlag(byte flag1);

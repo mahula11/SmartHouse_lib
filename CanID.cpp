@@ -6,6 +6,10 @@ CanID::CanID() {
 	_canID = 0;
 }
 
+CanID::CanID(MacID macID) {
+	_canID = macID; //* macID is first 16bits from _canID
+}
+
 byte CanID::getConfigPart() {
 	//* nastavime masku 16711680 = 0000 0000 ‭1111 1111 0000 0000 0000 0000‬
 	//* posunieme o 16 miest do prava, cize posunieme bity do prveho byte 

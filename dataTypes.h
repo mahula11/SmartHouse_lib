@@ -34,7 +34,7 @@ const byte idsFromConf[] = {
 };
 
 //* type of messages (size is 1byte)
-const byte MSGTYPE_NO_SPECIFICATION = 0;
+//const byte MSGTYPE_NO_SPECIFICATION = 0;
 //const byte MSGTYPE_FOR_CANCONF = 1;			//* CanDevice ask for whole configuration from CanConf
 //const byte MSGTYPE_FROM_CANCONF = 2;		//* CanConf send configuration to CanDevice
 //const byte MSGTYPE_FROM_CANCONF_ADD = 3;	//* CanConf add configuration to CanDevice
