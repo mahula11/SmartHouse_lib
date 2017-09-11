@@ -107,6 +107,10 @@ bool CanID::hasFlag_ping() {
 	return hasFlag(TYPE__FROM_ANY_DEVICE__PING);
 }
 
+bool CanID::hasFlag_ImUp() {
+	return hasFlag(TYPE__FROM_ANY_DEVICE__IM_UP);
+}
+
 //void CanID::setFlag_askSwitchForValue() {
 //	bitSet(_canID, 31);				//* set extended message
 //	_canID += ((uint32_t)TYPE__ASK_SWITCH_FOR_VALUE << 16);

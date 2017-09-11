@@ -2,6 +2,24 @@
 
 #include "dataTypes.h"
 
+const char* canBusSpeeds[15] = {
+	"CAN_4K096BPS",
+	"CAN_5KBPS",
+	"CAN_10KBPS",
+	"CAN_20KBPS",
+	"CAN_31K25BPS",
+	"CAN_33K3BPS",
+	"CAN_40KBPS",
+	"CAN_50KBPS",
+	"CAN_80KBPS",
+	"CAN_100KBPS",
+	"CAN_125KBPS",
+	"CAN_200KBPS",
+	"CAN_250KBPS",
+	"CAN_500KBPS",
+	"CAN_1000KBPS"
+};
+
 //* ---------------------- start CDataBase --------------------------
 
 CDataBase::CDataBase(byte type, MacID macId) : _type(type), _modeForEeprom(false) {
@@ -306,42 +324,42 @@ void CConfMsg_askForConfiguration::deserialize(byte * pData) {
 };
 //* ---------------------- end CConfDataReset --------------------------
 
-//* ---------------------- start CConfMsg_ping --------------------------
-CConfMsg_ping::CConfMsg_ping(MacID macId) : CDataBase(TYPE__FROM_ANY_DEVICE__PING, macId) {
+//* ---------------------- start CTraficMsg_ping --------------------------
+CTraficMsg_ping::CTraficMsg_ping(MacID macId) : CDataBase(TYPE__FROM_ANY_DEVICE__PING, macId) {
 }
 
-CConfMsg_ping::CConfMsg_ping(byte * pDeserializeData) : CDataBase(TYPE__FROM_ANY_DEVICE__PING, 0) {
+CTraficMsg_ping::CTraficMsg_ping(byte * pDeserializeData) : CDataBase(TYPE__FROM_ANY_DEVICE__PING, 0) {
 	deserialize(pDeserializeData);
 };
 
-byte CConfMsg_ping::getSize() {
+byte CTraficMsg_ping::getSize() {
 	return CDataBase::getSize();
 };
 
 //* Conf messages send type against traffic messages where we don't send type
-void CConfMsg_ping::serialize(byte * pData) {
+void CTraficMsg_ping::serialize(byte * pData) {
 };
 
-void CConfMsg_ping::deserialize(byte * pData) {
+void CTraficMsg_ping::deserialize(byte * pData) {
 };
-//* ---------------------- end CConfMsg_ping --------------------------
+//* ---------------------- end CTraficMsg_ping --------------------------
 
-//* ---------------------- start CConfMsg_ImUp --------------------------
-CConfMsg_ImUp::CConfMsg_ImUp(MacID macId) : CDataBase(TYPE__FROM_ANY_DEVICE__IM_UP, macId) {
+//* ---------------------- start CTraficMsg_ImUp --------------------------
+CTraficMsg_ImUp::CTraficMsg_ImUp(MacID macId) : CDataBase(TYPE__FROM_ANY_DEVICE__IM_UP, macId) {
 }
 
-CConfMsg_ImUp::CConfMsg_ImUp(byte * pDeserializeData) : CDataBase(TYPE__FROM_ANY_DEVICE__IM_UP, 0) {
+CTraficMsg_ImUp::CTraficMsg_ImUp(byte * pDeserializeData) : CDataBase(TYPE__FROM_ANY_DEVICE__IM_UP, 0) {
 	deserialize(pDeserializeData);
 };
 
-byte CConfMsg_ImUp::getSize() {
+byte CTraficMsg_ImUp::getSize() {
 	return CDataBase::getSize();
 };
 
 //* Conf messages send type against traffic messages where we don't send type
-void CConfMsg_ImUp::serialize(byte * pData) {
+void CTraficMsg_ImUp::serialize(byte * pData) {
 };
 
-void CConfMsg_ImUp::deserialize(byte * pData) {
+void CTraficMsg_ImUp::deserialize(byte * pData) {
 };
 //* ---------------------- end CConfMsg_ping --------------------------

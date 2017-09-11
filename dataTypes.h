@@ -68,6 +68,8 @@ const byte idsFromConf[] = {
 typedef uint16_t MacID;		//* MediaAccessControl address - Netword address of device
 typedef byte MsgData[8];
 
+extern const char* canBusSpeeds[] ;
+
 enum WATCHDOG_TIMEOUT {
 	to250ms, to500ms, to1000ms, to2000ms, to4000ms, to8000ms
 };
@@ -206,20 +208,20 @@ public:
 	void deserialize(byte * pData);
 };
 
-class CConfMsg_ping : public CDataBase {
+class CTraficMsg_ping : public CDataBase {
 public:
-	CConfMsg_ping(MacID macId);
-	CConfMsg_ping(byte * pDeserializeData);
+	CTraficMsg_ping(MacID macId);
+	CTraficMsg_ping(byte * pDeserializeData);
 
 	byte getSize();
 	void serialize(byte * pData);
 	void deserialize(byte * pData);
 };
 
-class CConfMsg_ImUp : public CDataBase {
+class CTraficMsg_ImUp : public CDataBase {
 public:
-	CConfMsg_ImUp(MacID macId);
-	CConfMsg_ImUp(byte * pDeserializeData);
+	CTraficMsg_ImUp(MacID macId);
+	CTraficMsg_ImUp(byte * pDeserializeData);
 
 	byte getSize();
 	void serialize(byte * pData);

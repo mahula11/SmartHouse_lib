@@ -31,6 +31,7 @@ public:
 	//void setFlag_fromSwitch();
 	bool hasFlag_askSwitchForValue();
 	bool hasFlag_ping();
+	bool hasFlag_ImUp();
 	//void setFlag_askSwitchForValue();
 	bool hasFlag_forConfiguration();
 	//void setFlag_forConfiguration();
