@@ -2,7 +2,6 @@
 
 #include "dataTypes.h"
 
-
 //* ---------------------- start CDataBase --------------------------
 
 CDataBase::CDataBase(byte type, MacID macId) : _type(type), _modeForEeprom(false) {
@@ -306,3 +305,43 @@ void CConfMsg_askForConfiguration::serialize(byte * pData) {
 void CConfMsg_askForConfiguration::deserialize(byte * pData) {
 };
 //* ---------------------- end CConfDataReset --------------------------
+
+//* ---------------------- start CConfMsg_ping --------------------------
+CConfMsg_ping::CConfMsg_ping(MacID macId) : CDataBase(TYPE__FROM_ANY_DEVICE__PING, macId) {
+}
+
+CConfMsg_ping::CConfMsg_ping(byte * pDeserializeData) : CDataBase(TYPE__FROM_ANY_DEVICE__PING, 0) {
+	deserialize(pDeserializeData);
+};
+
+byte CConfMsg_ping::getSize() {
+	return CDataBase::getSize();
+};
+
+//* Conf messages send type against traffic messages where we don't send type
+void CConfMsg_ping::serialize(byte * pData) {
+};
+
+void CConfMsg_ping::deserialize(byte * pData) {
+};
+//* ---------------------- end CConfMsg_ping --------------------------
+
+//* ---------------------- start CConfMsg_ImUp --------------------------
+CConfMsg_ImUp::CConfMsg_ImUp(MacID macId) : CDataBase(TYPE__FROM_ANY_DEVICE__IM_UP, macId) {
+}
+
+CConfMsg_ImUp::CConfMsg_ImUp(byte * pDeserializeData) : CDataBase(TYPE__FROM_ANY_DEVICE__IM_UP, 0) {
+	deserialize(pDeserializeData);
+};
+
+byte CConfMsg_ImUp::getSize() {
+	return CDataBase::getSize();
+};
+
+//* Conf messages send type against traffic messages where we don't send type
+void CConfMsg_ImUp::serialize(byte * pData) {
+};
+
+void CConfMsg_ImUp::deserialize(byte * pData) {
+};
+//* ---------------------- end CConfMsg_ping --------------------------

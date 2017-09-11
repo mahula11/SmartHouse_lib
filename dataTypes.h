@@ -17,6 +17,8 @@ const byte TYPE__FROM_CONF__RESET = 6;				//* send reset to processor
 const byte TYPE__FROM_CONF__SET_AUTO_RESET = 7;     //* set time for automatic reset
 const byte TYPE__FROM_SWITCH = 20;					//* switch send msg to lights
 const byte TYPE__ASK_SWITCH_FOR_VALUE = 21;			//* after restart canDevice, light ask to switch for values
+const byte TYPE__FROM_ANY_DEVICE__PING = 22;		//* send ping to canBus
+const byte TYPE__FROM_ANY_DEVICE__IM_UP = 23;		//* send message about start
 
 //* Aliases for DEVICE_TYPE
 const byte DEVICE_TYPE_LIGHT = TYPE__FROM_CONF__SET_SIMPLE_LIGHT;
@@ -194,11 +196,30 @@ public:
 	void deserialize(byte * pData);
 };
 
-
 class CConfMsg_askForConfiguration : public CDataBase {
 public:
 	CConfMsg_askForConfiguration(MacID macId);
 	CConfMsg_askForConfiguration(byte * pDeserializeData);
+
+	byte getSize();
+	void serialize(byte * pData);
+	void deserialize(byte * pData);
+};
+
+class CConfMsg_ping : public CDataBase {
+public:
+	CConfMsg_ping(MacID macId);
+	CConfMsg_ping(byte * pDeserializeData);
+
+	byte getSize();
+	void serialize(byte * pData);
+	void deserialize(byte * pData);
+};
+
+class CConfMsg_ImUp : public CDataBase {
+public:
+	CConfMsg_ImUp(MacID macId);
+	CConfMsg_ImUp(byte * pDeserializeData);
 
 	byte getSize();
 	void serialize(byte * pData);

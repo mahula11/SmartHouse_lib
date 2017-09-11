@@ -30,6 +30,7 @@ public:
 	bool hasFlag_fromSwitch();
 	//void setFlag_fromSwitch();
 	bool hasFlag_askSwitchForValue();
+	bool hasFlag_ping();
 	//void setFlag_askSwitchForValue();
 	bool hasFlag_forConfiguration();
 	//void setFlag_forConfiguration();
