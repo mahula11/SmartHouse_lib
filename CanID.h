@@ -41,6 +41,7 @@ public:
 	bool hasFlag_fromConfNumber();
 	//void setFlag_fromConfNumber();
 	bool hasFlag_fromConfSetWatchdog();
+	bool hasFlag_fromConfSetCanBusSpeed();
 	//void setFlag_fromConfSetWatchdog();
 	bool hasFlag_fromConfSetSwitch();
 	//void setFlag_fromConfSetSwitch();

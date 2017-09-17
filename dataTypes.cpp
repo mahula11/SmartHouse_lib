@@ -37,24 +37,11 @@ byte CDataBase::getSize() {
 
 byte CDataBase::getType() {
 	return _type;
-};
+}
 
 void CDataBase::setModeForEeprom(bool mode) {
 	_modeForEeprom = mode;
 }
-
-//void CDataBase::sendMsg() {
-//	byte data[8];
-//	serialize(data);
-//	INT8U ret = CAN0.sendMsgBuf(canId, 1, cdb.getSize(), data);
-//#ifdef DEBUG_BUILD
-//	if (ret == CAN_OK) {
-//		DEBUG(F("Send msg CanID:") << canId << ",deviceType:" << cdb.getType());
-//	} else {
-//		DEBUG(F("Failure when send CanID:") << canId << F(",error:") << ret);
-//	}
-//#endif
-//}
 //* ---------------------- end CDataBase --------------------------
 
 //* ---------------------- start CTrafficDataSwitch --------------------------
@@ -300,7 +287,6 @@ void CConfMsg_autoReset::deserialize(byte * pData) {
 	}
 	_autoResetTime = (WATCHDOG_TIMEOUT)*pData;
 };
-
 //* ---------------------- end CConfDataAutoReset --------------------------
 
 //* ---------------------- start CConfMsg_askForConfiguration --------------------------
@@ -324,42 +310,74 @@ void CConfMsg_askForConfiguration::deserialize(byte * pData) {
 };
 //* ---------------------- end CConfDataReset --------------------------
 
-//* ---------------------- start CTraficMsg_ping --------------------------
-CTraficMsg_ping::CTraficMsg_ping(MacID macId) : CDataBase(TYPE__FROM_ANY_DEVICE__PING, macId) {
+//* ---------------------- start CConfMsg_setCanBusSpeed --------------------------
+CConfMsg_setCanBusSpeed::CConfMsg_setCanBusSpeed(MacID macId, uint8_t canBusSpeed) : CDataBase(TYPE__FROM_CONF__SET_CANBUS_SPEED, macId), _canBusSpeed(canBusSpeed) {
 }
 
-CTraficMsg_ping::CTraficMsg_ping(byte * pDeserializeData) : CDataBase(TYPE__FROM_ANY_DEVICE__PING, 0) {
+CConfMsg_setCanBusSpeed::CConfMsg_setCanBusSpeed(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__SET_CANBUS_SPEED, 0) {
 	deserialize(pDeserializeData);
 };
 
-byte CTraficMsg_ping::getSize() {
+byte CConfMsg_setCanBusSpeed::getSize() {
+	return CDataBase::getSize() + sizeof(_canBusSpeed);
+};
+
+//* Conf messages send type against traffic messages where we don't send type
+void CConfMsg_setCanBusSpeed::serialize(byte * pData) {
+	//CDataBase::serialize(pData);
+	if (_modeForEeprom) {
+		*pData = _type;
+		pData += sizeof(_type);
+	}
+	*pData = _canBusSpeed;
+};
+
+void CConfMsg_setCanBusSpeed::deserialize(byte * pData) {
+	if (_modeForEeprom) {
+		_type = *pData;
+		pData += sizeof(_type);
+	}
+	_canBusSpeed = *pData;
+};
+//* ---------------------- end CConfMsg_setCanBusSpeed --------------------------
+
+
+//* ---------------------- start CTrafficMsg_ping --------------------------
+CTrafficMsg_ping::CTrafficMsg_ping(MacID macId) : CDataBase(TYPE__FROM_ANY_DEVICE__PING, macId) {
+}
+
+CTrafficMsg_ping::CTrafficMsg_ping(byte * pDeserializeData) : CDataBase(TYPE__FROM_ANY_DEVICE__PING, 0) {
+	deserialize(pDeserializeData);
+};
+
+byte CTrafficMsg_ping::getSize() {
 	return CDataBase::getSize();
 };
 
 //* Conf messages send type against traffic messages where we don't send type
-void CTraficMsg_ping::serialize(byte * pData) {
+void CTrafficMsg_ping::serialize(byte * pData) {
 };
 
-void CTraficMsg_ping::deserialize(byte * pData) {
+void CTrafficMsg_ping::deserialize(byte * pData) {
 };
-//* ---------------------- end CTraficMsg_ping --------------------------
+//* ---------------------- end CTrafficMsg_ping --------------------------
 
-//* ---------------------- start CTraficMsg_ImUp --------------------------
-CTraficMsg_ImUp::CTraficMsg_ImUp(MacID macId) : CDataBase(TYPE__FROM_ANY_DEVICE__IM_UP, macId) {
+//* ---------------------- start CTrafficMsg_ImUp --------------------------
+CTrafficMsg_ImUp::CTrafficMsg_ImUp(MacID macId) : CDataBase(TYPE__FROM_ANY_DEVICE__IM_UP, macId) {
 }
 
-CTraficMsg_ImUp::CTraficMsg_ImUp(byte * pDeserializeData) : CDataBase(TYPE__FROM_ANY_DEVICE__IM_UP, 0) {
+CTrafficMsg_ImUp::CTrafficMsg_ImUp(byte * pDeserializeData) : CDataBase(TYPE__FROM_ANY_DEVICE__IM_UP, 0) {
 	deserialize(pDeserializeData);
 };
 
-byte CTraficMsg_ImUp::getSize() {
+byte CTrafficMsg_ImUp::getSize() {
 	return CDataBase::getSize();
 };
 
 //* Conf messages send type against traffic messages where we don't send type
-void CTraficMsg_ImUp::serialize(byte * pData) {
+void CTrafficMsg_ImUp::serialize(byte * pData) {
 };
 
-void CTraficMsg_ImUp::deserialize(byte * pData) {
+void CTrafficMsg_ImUp::deserialize(byte * pData) {
 };
-//* ---------------------- end CConfMsg_ping --------------------------
+//* ---------------------- end CTrafficMsg_ImUp --------------------------

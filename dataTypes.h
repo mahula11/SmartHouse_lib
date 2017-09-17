@@ -10,11 +10,13 @@
 const byte TYPE__NO_SPECIFICATION = 0;
 const byte TYPE__ASK_FOR_CONF = 1;					//* CanDevice ask for whole configuration from CanConf
 const byte TYPE__FROM_CONF__COUNT = 2;				//* count of configurations
-const byte TYPE__FROM_CONF__SET_SIMPLE_SWITCH = 3;  //* configuration messages for devices
-const byte TYPE__FROM_CONF__SET_SIMPLE_LIGHT = 4;
+const byte TYPE__FROM_CONF__SET_SIMPLE_SWITCH = 3;  //* simple classic switch, two positions, for turn on must press upside, to turn off must press downside
+const byte TYPE__FROM_CONF__SET_SIMPLE_LIGHT = 4;   //* light turn on or off
 const byte TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT = 5;
 const byte TYPE__FROM_CONF__RESET = 6;				//* send reset to processor
 const byte TYPE__FROM_CONF__SET_AUTO_RESET = 7;     //* set time for automatic reset
+const byte TYPE__FROM_CONF__SET_CANBUS_SPEED = 8;   //* set speed for CAN BUS
+const byte TYPE__FROM_CONF__SET_SWITCH_AS_BUTTON = 9; //* switch as classic button, for turn on must press upside, after release upside it goes back
 const byte TYPE__FROM_SWITCH = 20;					//* switch send msg to lights
 const byte TYPE__ASK_SWITCH_FOR_VALUE = 21;			//* after restart canDevice, light ask to switch for values
 const byte TYPE__FROM_ANY_DEVICE__PING = 22;		//* send ping to canBus
@@ -24,6 +26,7 @@ const byte TYPE__FROM_ANY_DEVICE__IM_UP = 23;		//* send message about start
 const byte DEVICE_TYPE_LIGHT = TYPE__FROM_CONF__SET_SIMPLE_LIGHT;
 const byte DEVICE_TYPE_SWITCH = TYPE__FROM_CONF__SET_SIMPLE_SWITCH;
 const byte DEVICE_TYPE_WATCHDOG_TIMEOUT = TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT;
+const byte DEVICE_TYPE_SWITCH_BUTTON = TYPE__FROM_CONF__SET_SWITCH_AS_BUTTON;
 
 const byte idsFromConf[] = {
 		TYPE__FROM_CONF__COUNT,
@@ -32,6 +35,8 @@ const byte idsFromConf[] = {
 		TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT,
 		TYPE__FROM_CONF__RESET,
 		TYPE__FROM_CONF__SET_AUTO_RESET,
+		TYPE__FROM_CONF__SET_CANBUS_SPEED,
+		TYPE__FROM_CONF__SET_SWITCH_AS_BUTTON,
 		0
 };
 
@@ -68,7 +73,11 @@ const byte idsFromConf[] = {
 typedef uint16_t MacID;		//* MediaAccessControl address - Netword address of device
 typedef byte MsgData[8];
 
-extern const char* canBusSpeeds[] ;
+#define CANBUS__COUNT_OF_SPEEDS 15
+extern const char* canBusSpeeds[];
+
+//* can be used when message should be received and processed with all devices on networks
+#define CANBUS__MESSAGE_TO_ALL 0
 
 enum WATCHDOG_TIMEOUT {
 	to250ms, to500ms, to1000ms, to2000ms, to4000ms, to8000ms
@@ -81,10 +90,13 @@ enum AUTO_RESET_TIMES {
 class CDataBase {
 public:
 	byte _type;
+	//* Conf messages send type against traffic messages where we don't send type
 	bool _modeForEeprom;
 	CanID _destCanID;
 
 	CDataBase(byte type, MacID macId);
+	//* when saving messagess to eeprom, must go there type of message, 
+	//* otherwise, when sending messages through network, type of message is in CanID, no in data fields
 	void setModeForEeprom(bool mode);
 
 	virtual byte getSize();
@@ -208,20 +220,32 @@ public:
 	void deserialize(byte * pData);
 };
 
-class CTraficMsg_ping : public CDataBase {
+class CConfMsg_setCanBusSpeed : public CDataBase {
+private:
+	uint8_t _canBusSpeed;
 public:
-	CTraficMsg_ping(MacID macId);
-	CTraficMsg_ping(byte * pDeserializeData);
+	CConfMsg_setCanBusSpeed(MacID macId, uint8_t canBusSpeed);
+	CConfMsg_setCanBusSpeed(byte * pDeserializeData);
 
 	byte getSize();
 	void serialize(byte * pData);
 	void deserialize(byte * pData);
 };
 
-class CTraficMsg_ImUp : public CDataBase {
+class CTrafficMsg_ping : public CDataBase {
 public:
-	CTraficMsg_ImUp(MacID macId);
-	CTraficMsg_ImUp(byte * pDeserializeData);
+	CTrafficMsg_ping(MacID macId);
+	CTrafficMsg_ping(byte * pDeserializeData);
+
+	byte getSize();
+	void serialize(byte * pData);
+	void deserialize(byte * pData);
+};
+
+class CTrafficMsg_ImUp : public CDataBase {
+public:
+	CTrafficMsg_ImUp(MacID macId);
+	CTrafficMsg_ImUp(byte * pDeserializeData);
 
 	byte getSize();
 	void serialize(byte * pData);

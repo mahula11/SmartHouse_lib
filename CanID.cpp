@@ -152,6 +152,11 @@ bool CanID::hasFlag_fromConfSetWatchdog() {
 	return hasFlag(TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT);
 }
 
+bool CanID::hasFlag_fromConfSetCanBusSpeed() {
+	return hasFlag(TYPE__FROM_CONF__SET_CANBUS_SPEED);
+}
+
+
 //void CanID::setFlag_fromConfSetWatchdog() {
 //	bitSet(_canID, 31);				//* set extended message
 //	_canID += ((uint32_t)TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT << 16);
