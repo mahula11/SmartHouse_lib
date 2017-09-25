@@ -71,7 +71,7 @@ const byte idsFromConf[] = {
 //const byte DEVICE_TYPE_WATCHDOG_TIMEOUT = 17;
 
 typedef uint16_t MacID;		//* MediaAccessControl address - Netword address of device
-typedef byte MsgData[8];
+typedef uint8_t MsgData[8];
 
 #define CANBUS__COUNT_OF_SPEEDS 15
 extern const char* canBusSpeeds[];
