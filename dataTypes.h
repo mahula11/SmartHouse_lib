@@ -17,6 +17,7 @@ const byte TYPE__FROM_CONF__RESET = 6;				//* send reset to processor
 const byte TYPE__FROM_CONF__SET_AUTO_RESET = 7;     //* set time for automatic reset
 const byte TYPE__FROM_CONF__SET_CANBUS_SPEED = 8;   //* set speed for CAN BUS
 const byte TYPE__FROM_CONF__SET_SWITCH_AS_BUTTON = 9; //* switch as classic button, for turn on must press upside, after release upside it goes back
+const byte TYPE__FROM_CONF__SET_NEW_CONFIGURATION = 10; //* set new configuration
 const byte TYPE__FROM_SWITCH = 20;					//* switch send msg to lights
 const byte TYPE__ASK_SWITCH_FOR_VALUE = 21;			//* after restart canDevice, light ask to switch for values
 const byte TYPE__FROM_ANY_DEVICE__PING = 22;		//* send ping to canBus
@@ -37,6 +38,7 @@ const byte idsFromConf[] = {
 		TYPE__FROM_CONF__SET_AUTO_RESET,
 		TYPE__FROM_CONF__SET_CANBUS_SPEED,
 		TYPE__FROM_CONF__SET_SWITCH_AS_BUTTON,
+		TYPE__FROM_CONF__SET_NEW_CONFIGURATION,
 		0
 };
 
@@ -226,6 +228,17 @@ private:
 public:
 	CConfMsg_setCanBusSpeed(MacID macId, uint8_t canBusSpeed);
 	CConfMsg_setCanBusSpeed(byte * pDeserializeData);
+
+	byte getSize();
+	void serialize(byte * pData);
+	void deserialize(byte * pData);
+};
+
+class CConfMsg_newConfiguration : public CDataBase {
+private:
+public:
+	CConfMsg_newConfiguration(MacID macId);
+	CConfMsg_newConfiguration(byte * pDeserializeData);
 
 	byte getSize();
 	void serialize(byte * pData);

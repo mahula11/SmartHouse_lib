@@ -156,6 +156,9 @@ bool CanID::hasFlag_fromConfSetCanBusSpeed() {
 	return hasFlag(TYPE__FROM_CONF__SET_CANBUS_SPEED);
 }
 
+bool CanID::hasFlag_fromConfSetNewConfiguration() {
+	return hasFlag(TYPE__FROM_CONF__SET_NEW_CONFIGURATION);
+}
 
 //void CanID::setFlag_fromConfSetWatchdog() {
 //	bitSet(_canID, 31);				//* set extended message

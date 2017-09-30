@@ -341,6 +341,35 @@ void CConfMsg_setCanBusSpeed::deserialize(byte * pData) {
 };
 //* ---------------------- end CConfMsg_setCanBusSpeed --------------------------
 
+//* ---------------------- start CConfMsg_newConfiguration --------------------------
+CConfMsg_newConfiguration::CConfMsg_newConfiguration(MacID macId) : CDataBase(TYPE__FROM_CONF__SET_NEW_CONFIGURATION, macId) {
+}
+
+CConfMsg_newConfiguration::CConfMsg_newConfiguration(byte * pDeserializeData) : CDataBase(TYPE__FROM_CONF__SET_NEW_CONFIGURATION, 0) {
+	deserialize(pDeserializeData);
+};
+
+byte CConfMsg_newConfiguration::getSize() {
+	return CDataBase::getSize();
+};
+
+//* Conf messages send type against traffic messages where we don't send type
+void CConfMsg_newConfiguration::serialize(byte * pData) {
+	//CDataBase::serialize(pData);
+	if (_modeForEeprom) {
+		*pData = _type;
+		pData += sizeof(_type);
+	}
+};
+
+void CConfMsg_newConfiguration::deserialize(byte * pData) {
+	if (_modeForEeprom) {
+		_type = *pData;
+		pData += sizeof(_type);
+	}
+};
+//* ---------------------- end CConfMsg_newConfiguration --------------------------
+
 
 //* ---------------------- start CTrafficMsg_ping --------------------------
 CTrafficMsg_ping::CTrafficMsg_ping(MacID macId) : CDataBase(TYPE__FROM_ANY_DEVICE__PING, macId) {
