@@ -168,7 +168,7 @@ DEFINE_CLASS_MSG1_H(CConfMsg_switch, uint8_t, gpio)
 //	void deserialize(byte * pData);
 //};
 
-DEFINE_CLASS_MSG3_H(CConfMsg_light, byte, gpio, uint16_t, switchMacID, byte, switchGPIO)
+DEFINE_CLASS_MSG3_H(CConfMsg_light, uint8_t, gpio, MacID, switchMacID, uint8_t, switchGPIO)
 //class CConfMsg_light : public CDataBase {
 //public:
 //	byte _gpio;

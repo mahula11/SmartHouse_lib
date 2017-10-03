@@ -165,7 +165,7 @@ DEFINE_CLASS_MSG1_CPP(CConfMsg_switch, TYPE__FROM_CONF__SET_SIMPLE_SWITCH, uint8
 //};
 ////* ---------------------- end CConfDataSwitch --------------------------
 
-DEFINE_CLASS_MSG3_CPP(CConfMsg_light, TYPE__FROM_CONF__SET_SIMPLE_LIGHT, byte, gpio, uint16_t, switchCanID, byte, switchGPIO)
+DEFINE_CLASS_MSG3_CPP(CConfMsg_light, TYPE__FROM_CONF__SET_SIMPLE_LIGHT, uint8_t, gpio, MacID, switchMacID, uint8_t, switchGPIO)
 //* ---------------------- start CConfDataLight --------------------------
 //CConfMsg_light::CConfMsg_light(MacID macId, byte gpio, MacID switchCanID, byte switchGPIO) : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_LIGHT, macId), _gpio(gpio), _switchMacID(switchCanID), _switchGPIO(switchGPIO) {
 //}

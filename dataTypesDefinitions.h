@@ -12,10 +12,9 @@
 
 #define DEFINE_CLASS_MSG2_H(className, varType1, varName1, varType2, varName2)	\
 	class className : public CDataBase {					\
-	private:												\
+	public:													\
 		varType1 _##varName1;									\
 		varType2 _##varName2;									\
-	public:													\
 		className();										\
 		className(MacID macId, varType1 varName1, varType2 varName2);	\
 		className(byte * pDeserializeData);					\
