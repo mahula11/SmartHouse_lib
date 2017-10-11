@@ -19,9 +19,9 @@ private:
 public:
 	uint32_t _canID;
 	
-	byte getConfigPart();
-	void clearConfigPart();
-	void setConfigPart(byte type);
+	byte getType();
+	//void clearConfigPart();
+	//void setConfigPart(byte type);
 
 	void setFlagExtended();
 	void setFlagRemote();

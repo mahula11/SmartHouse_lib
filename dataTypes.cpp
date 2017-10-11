@@ -20,10 +20,12 @@ const char* canBusSpeeds[15] = {
 	"CAN_1000KBPS"
 };
 
+byte CDataBase::s_type;
+
 //* ---------------------- start CDataBase --------------------------
 
 CDataBase::CDataBase(byte type, MacID macId) {
-	_type = type;
+	s_type = type;
 	_modeForEeprom = false;
 	_destCanID.setMacID(macId);
 	_destCanID.setFlagExtended();
@@ -34,11 +36,11 @@ CDataBase::CDataBase(byte type, MacID macId) {
 //}
 
 byte CDataBase::getSize() {
-	return _modeForEeprom ? sizeof(_type) : 0;
+	return _modeForEeprom ? sizeof(s_type) : 0;
 }
 
 byte CDataBase::getType() {
-	return _type;
+	return s_type;
 }
 
 void CDataBase::setModeForEeprom(bool mode) {
@@ -46,7 +48,20 @@ void CDataBase::setModeForEeprom(bool mode) {
 }
 //* ---------------------- end CDataBase --------------------------
 
+DEFINE_CLASS_MSG0_CPP(CConfMsg_reset, TYPE__FROM_CONF__RESET)
+DEFINE_CLASS_MSG1_CPP(CConfMsg_autoReset, TYPE__FROM_CONF__SET_AUTO_RESET, uint8_t, autoResetTime)
+DEFINE_CLASS_REMOTE_MSG0_CPP(CConfMsg_askForConfiguration, TYPE__ASK_FOR_CONF)
+DEFINE_CLASS_MSG1_CPP(CConfMsg_setCanBusSpeed, TYPE__FROM_CONF__SET_CANBUS_SPEED, uint8_t, canBusSpeed)
+DEFINE_CLASS_MSG0_CPP(CConfMsg_newConfiguration, TYPE__FROM_CONF__SET_NEW_CONFIGURATION)
+DEFINE_CLASS_MSG0_CPP(CTrafficMsg_ImUp, TYPE__FROM_ANY_DEVICE__IM_UP)
+DEFINE_CLASS_MSG0_CPP(CTrafficMsg_ping, TYPE__FROM_ANY_DEVICE__PING)
+DEFINE_CLASS_MSG1_CPP(CConfMsg_watchdog, TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT, uint8_t, to)
+DEFINE_CLASS_MSG3_CPP(CConfMsg_light, TYPE__FROM_CONF__SET_SIMPLE_LIGHT, uint8_t, gpio, MacID, switchMacID, uint8_t, switchGPIO)
+DEFINE_CLASS_MSG1_CPP(CConfMsg_switch, TYPE__FROM_CONF__SET_SIMPLE_SWITCH, uint8_t, gpio)
+DEFINE_CLASS_MSG1_CPP(CConfMsg_numOfConf, TYPE__FROM_CONF__COUNT, uint8_t, count)
+DEFINE_CLASS_MSG1_CPP(CTrafficMsg_askSwitchForData, TYPE__ASK_SWITCH_FOR_VALUE, uint8_t, gpio)
 DEFINE_CLASS_MSG2_CPP(CTrafficMsg_fromSwitch, TYPE__FROM_SWITCH, uint8_t, gpio, uint8_t, value)
+
 ////* ---------------------- start CTrafficDataSwitch --------------------------
 //CTrafficMsg_fromSwitch::CTrafficMsg_fromSwitch(MacID macId, byte gpio, byte value) : CDataBase(TYPE__FROM_SWITCH, macId), _gpio(gpio), _value(value) {
 //}
@@ -75,7 +90,7 @@ DEFINE_CLASS_MSG2_CPP(CTrafficMsg_fromSwitch, TYPE__FROM_SWITCH, uint8_t, gpio, 
 //};
 ////* ---------------------- end CTrafficDataSwitch --------------------------
 
-DEFINE_CLASS_MSG1_CPP(CTrafficMsg_askSwitchForData, TYPE__ASK_SWITCH_FOR_VALUE, uint8_t, gpio)
+
 ////* ---------------------- start CTrafficDataAskSwitchForData --------------------------
 //CTrafficMsg_askSwitchForData::CTrafficMsg_askSwitchForData(MacID macId, byte gpio) : CDataBase(TYPE__ASK_SWITCH_FOR_VALUE, macId), _gpio(gpio) {
 //}
@@ -100,7 +115,7 @@ DEFINE_CLASS_MSG1_CPP(CTrafficMsg_askSwitchForData, TYPE__ASK_SWITCH_FOR_VALUE, 
 //};
 ////* ---------------------- end CTrafficDataAskSwitchForData --------------------------
 
-DEFINE_CLASS_MSG1_CPP(CConfMsg_numOfConf, TYPE__FROM_CONF__COUNT, uint8_t, count)
+
 ////* ---------------------- start CConfMsg_numOfConf --------------------------
 //CConfMsg_numOfConf::CConfMsg_numOfConf(MacID macId, byte count) : CDataBase(TYPE__FROM_CONF__COUNT, macId), _count(count) {
 //}
@@ -131,7 +146,7 @@ DEFINE_CLASS_MSG1_CPP(CConfMsg_numOfConf, TYPE__FROM_CONF__COUNT, uint8_t, count
 //};
 ////* ---------------------- end CConfMsg_numOfConf --------------------------
 
-DEFINE_CLASS_MSG1_CPP(CConfMsg_switch, TYPE__FROM_CONF__SET_SIMPLE_SWITCH, uint8_t, gpio)
+
 ////* ---------------------- start CConfDataSwitch --------------------------
 //CConfMsg_switch::CConfMsg_switch(MacID macId, byte gpio) : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_SWITCH, macId), _gpio(gpio) {
 //}
@@ -165,7 +180,7 @@ DEFINE_CLASS_MSG1_CPP(CConfMsg_switch, TYPE__FROM_CONF__SET_SIMPLE_SWITCH, uint8
 //};
 ////* ---------------------- end CConfDataSwitch --------------------------
 
-DEFINE_CLASS_MSG3_CPP(CConfMsg_light, TYPE__FROM_CONF__SET_SIMPLE_LIGHT, uint8_t, gpio, MacID, switchMacID, uint8_t, switchGPIO)
+
 //* ---------------------- start CConfDataLight --------------------------
 //CConfMsg_light::CConfMsg_light(MacID macId, byte gpio, MacID switchCanID, byte switchGPIO) : CDataBase(TYPE__FROM_CONF__SET_SIMPLE_LIGHT, macId), _gpio(gpio), _switchMacID(switchCanID), _switchGPIO(switchGPIO) {
 //}
@@ -207,7 +222,7 @@ DEFINE_CLASS_MSG3_CPP(CConfMsg_light, TYPE__FROM_CONF__SET_SIMPLE_LIGHT, uint8_t
 //};
 ////* ---------------------- end CConfDataLight --------------------------
 
-DEFINE_CLASS_MSG1_CPP(CConfMsg_watchdog, TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT, uint8_t, to)
+
 ////* ---------------------- start CConfDataWatchdog --------------------------
 //CConfMsg_watchdog::CConfMsg_watchdog(MacID macId, uint8_t to) : CDataBase(TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT, macId), _to(to) {
 //}
@@ -241,7 +256,8 @@ DEFINE_CLASS_MSG1_CPP(CConfMsg_watchdog, TYPE__FROM_CONF__SET_WATCHDOG_TIMEOUT, 
 //};
 ////* ---------------------- end CConfDataWatchdog --------------------------
 
-DEFINE_CLASS_MSG0_CPP(CConfMsg_reset, TYPE__FROM_CONF__RESET)
+
+
 ////* ---------------------- start CConfDataReset --------------------------
 //CConfMsg_reset::CConfMsg_reset(MacID macId) : CDataBase(TYPE__FROM_CONF__RESET, macId) {
 //}
@@ -262,7 +278,7 @@ DEFINE_CLASS_MSG0_CPP(CConfMsg_reset, TYPE__FROM_CONF__RESET)
 //};
 ////* ---------------------- end CConfDataReset --------------------------
 
-DEFINE_CLASS_MSG1_CPP(CConfMsg_autoReset, TYPE__FROM_CONF__SET_AUTO_RESET, uint8_t, autoResetTime)
+
 ////* ---------------------- start CConfDataAutoReset --------------------------
 //CConfMsg_autoReset::CConfMsg_autoReset(MacID macId, uint8_t autoResetTime) : CDataBase(TYPE__FROM_CONF__SET_AUTO_RESET, macId), _autoResetTime(autoResetTime) {
 //}
@@ -297,7 +313,7 @@ DEFINE_CLASS_MSG1_CPP(CConfMsg_autoReset, TYPE__FROM_CONF__SET_AUTO_RESET, uint8
 //};
 ////* ---------------------- end CConfDataAutoReset --------------------------
 
-DEFINE_CLASS_REMOTE_MSG0_CPP(CConfMsg_askForConfiguration, TYPE__ASK_FOR_CONF)
+
 
 ////* ---------------------- start CConfMsg_askForConfiguration --------------------------
 //CConfMsg_askForConfiguration::CConfMsg_askForConfiguration(MacID macId) : CDataBase(TYPE__ASK_FOR_CONF, macId) {
@@ -320,7 +336,7 @@ DEFINE_CLASS_REMOTE_MSG0_CPP(CConfMsg_askForConfiguration, TYPE__ASK_FOR_CONF)
 //};
 ////* ---------------------- end CConfMsg_askForConfiguration --------------------------
 
-DEFINE_CLASS_MSG1_CPP(CConfMsg_setCanBusSpeed, TYPE__FROM_CONF__SET_CANBUS_SPEED, uint8_t, canBusSpeed)
+
 
 
 ////* ---------------------- start CConfMsg_setCanBusSpeed --------------------------
@@ -354,7 +370,7 @@ DEFINE_CLASS_MSG1_CPP(CConfMsg_setCanBusSpeed, TYPE__FROM_CONF__SET_CANBUS_SPEED
 //};
 ////* ---------------------- end CConfMsg_setCanBusSpeed --------------------------
 
-DEFINE_CLASS_MSG0_CPP(CConfMsg_newConfiguration, TYPE__FROM_CONF__SET_NEW_CONFIGURATION)
+
 ////* ---------------------- start CConfMsg_newConfiguration --------------------------
 //CConfMsg_newConfiguration::CConfMsg_newConfiguration(MacID macId) : CDataBase(TYPE__FROM_CONF__SET_NEW_CONFIGURATION, macId) {
 //}
@@ -384,7 +400,7 @@ DEFINE_CLASS_MSG0_CPP(CConfMsg_newConfiguration, TYPE__FROM_CONF__SET_NEW_CONFIG
 //};
 ////* ---------------------- end CConfMsg_newConfiguration --------------------------
 
-DEFINE_CLASS_MSG0_CPP(CTrafficMsg_ping, TYPE__FROM_ANY_DEVICE__PING)
+
 ////* ---------------------- start CTrafficMsg_ping --------------------------
 //CTrafficMsg_ping::CTrafficMsg_ping(MacID macId) : CDataBase(TYPE__FROM_ANY_DEVICE__PING, macId) {
 //}
@@ -405,7 +421,7 @@ DEFINE_CLASS_MSG0_CPP(CTrafficMsg_ping, TYPE__FROM_ANY_DEVICE__PING)
 //};
 ////* ---------------------- end CTrafficMsg_ping --------------------------
 
-DEFINE_CLASS_MSG0_CPP(CTrafficMsg_ImUp, TYPE__FROM_ANY_DEVICE__IM_UP)
+
 ////* ---------------------- start CTrafficMsg_ImUp --------------------------
 //CTrafficMsg_ImUp::CTrafficMsg_ImUp(MacID macId) : CDataBase(TYPE__FROM_ANY_DEVICE__IM_UP, macId) {
 //}

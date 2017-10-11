@@ -61,15 +61,15 @@
 																				\
 	void className::serialize(byte * pData) {									\
 		if (_modeForEeprom) {													\
-			*pData = _type;														\
-			pData += sizeof(_type);												\
+			*pData = s_type;														\
+			pData += sizeof(s_type);												\
 		}																		\
 	}; 																			\
  																				\
 	void className::deserialize(byte * pData) { 								\
 		if (_modeForEeprom) { 													\
-			_type = *pData; 													\
-			pData += sizeof(_type); 											\
+			s_type = *pData; 													\
+			pData += sizeof(s_type); 											\
 		} 																		\
 	};
 
@@ -104,16 +104,16 @@
 																												\
 	void className::serialize(byte * pData) {																	\
 		if (_modeForEeprom) {																					\
-			*pData = _type;																						\
-			pData += sizeof(_type);																				\
+			*pData = s_type;																						\
+			pData += sizeof(s_type);																				\
 		}																										\
 		*pData = _##varName;																						\
 	} 																											\
 																												\
 	void className::deserialize(byte * pData) {																	\
 		if (_modeForEeprom) { 																					\
-			_type = *pData; 																					\
-			pData += sizeof(_type); 																			\
+			s_type = *pData; 																					\
+			pData += sizeof(s_type); 																			\
 		} 																										\
 		_##varName = *pData; 																						\
 	}
@@ -139,8 +139,8 @@
 																												\
 	void className::serialize(byte * pData) {																	\
 		if (_modeForEeprom) {																					\
-			*pData = _type;																						\
-			pData += sizeof(_type);																				\
+			*pData = s_type;																						\
+			pData += sizeof(s_type);																				\
 		}																										\
 		*pData = _##varName1;																						\
 		pData += sizeof(_##varName1);																				\
@@ -149,8 +149,8 @@
 																												\
 	void className::deserialize(byte * pData) {																	\
 		if (_modeForEeprom) { 																					\
-			_type = *pData; 																					\
-			pData += sizeof(_type); 																			\
+			s_type = *pData; 																					\
+			pData += sizeof(s_type); 																			\
 		} 																										\
 		_##varName1 = *pData; 																					\
 		pData += sizeof(_##varName1); 																			\
@@ -194,8 +194,8 @@
 																												\
 	void className::serialize(byte * pData) {																	\
 		if (_modeForEeprom) {																					\
-			*pData = _type;																						\
-			pData += sizeof(_type);																				\
+			*pData = s_type;																						\
+			pData += sizeof(s_type);																				\
 		}																										\
 		*pData = _##varName1;																						\
 		pData += sizeof(_##varName1);																				\
@@ -206,8 +206,8 @@
 																												\
 	void className::deserialize(byte * pData) {																	\
 		if (_modeForEeprom) { 																					\
-			_type = *pData; 																					\
-			pData += sizeof(_type); 																			\
+			s_type = *pData; 																					\
+			pData += sizeof(s_type); 																			\
 		} 																										\
 		_##varName1 = *pData; 																					\
 		pData += sizeof(_##varName1); 																			\

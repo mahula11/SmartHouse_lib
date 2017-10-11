@@ -10,27 +10,32 @@ CanID::CanID(MacID macID) {
 	_canID = macID; //* macID is first 16bits from _canID
 }
 
-byte CanID::getConfigPart() {
+byte CanID::getType() {
 	//* nastavime masku 16711680 = 0000 0000 ‭1111 1111 0000 0000 0000 0000‬
 	//* posunieme o 16 miest do prava, cize posunieme bity do prveho byte 
 	return (_canID & 16711680) >> 16;
 }
 
-void CanID::clearConfigPart() {
-	//* resetne prvych 16 bitov, aby sa mohla nastavit MacID
-	//* 4294901760 = 1111 1111 1111 1111 0000 0000 0000 0000
-	//* ‭‭4278255615‬ = 1111 1111 0000 0000 1111 1111 1111 1111‬
-	_canID &= 4278255615;
-	//_canID &= ‭4294901760;
-}
+//void CanID::clearConfigPart() {
+//	//* resetne prvych 16 bitov, aby sa mohla nastavit MacID
+//	//* 4294901760 = 1111 1111 1111 1111 0000 0000 0000 0000
+//	//* ‭‭4278255615‬ = 1111 1111 0000 0000 1111 1111 1111 1111‬
+//	_canID &= 4278255615;
+//	//_canID &= ‭4294901760;
+//}
 
-void CanID::setConfigPart(byte type) {
-	bitSet(_canID, 31);				//* set extended message
+//void CanID::setConfigPart(byte type) {
+//	bitSet(_canID, 31);				//* set extended message
+//	_canID += ((uint32_t)type << 16);
+//}
+
+void CanID::setType(uint8_t type) {
 	_canID += ((uint32_t)type << 16);
 }
 
+
 bool CanID::hasFlag(byte flag1) {
-	if (getConfigPart() == flag1) { // || res == CANID_MSGTYPE_ADD_CONF || res == CANID_MSGTYPE_DEL_CONF) {
+	if (getType() == flag1) { // || res == CANID_MSGTYPE_ADD_CONF || res == CANID_MSGTYPE_DEL_CONF) {
 		return true;
 	} else {
 		return false;
@@ -38,7 +43,7 @@ bool CanID::hasFlag(byte flag1) {
 }
 
 bool CanID::hasFlag(byte flag1, byte flag2) {
-	byte res = getConfigPart();
+	byte res = getType();
 	if (res == flag1 || res == flag2) { // || res == CANID_MSGTYPE_DEL_CONF) {
 		return true;
 	} else {
@@ -47,7 +52,7 @@ bool CanID::hasFlag(byte flag1, byte flag2) {
 }
 
 bool CanID::hasFlag(byte flag1, byte flag2, byte flag3) {
-	byte res = getConfigPart();
+	byte res = getType();
 	if (res == flag1 || res == flag2 || res == flag3) {
 		return true;
 	} else {
@@ -77,14 +82,6 @@ void CanID::setFlagExtended() {
 void CanID::setFlagRemote() {
 	bitSet(_canID, 30);				//* set remote flag
 }
-
-void CanID::setType(uint8_t type) {
-	_canID += ((uint32_t)type << 16);
-}
-
-
-
-
 
 bool CanID::hasFlag_fromSwitch() {
 	return hasFlag(TYPE__FROM_SWITCH);

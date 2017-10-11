@@ -93,7 +93,8 @@ enum AUTO_RESET_TIMES {
 
 class CDataBase {
 public:
-	byte _type;
+	static byte s_type;
+	static byte getType();
 	//* Conf messages send type against traffic messages where we don't send type
 	bool _modeForEeprom;
 	CanID _destCanID;
@@ -106,13 +107,23 @@ public:
 	virtual byte getSize();
 	virtual void serialize(byte * pData) = 0;
 	virtual void deserialize(byte * pData) = 0;
-
-	//void sendMsg();
-
-	byte getType();
 };
 
 DEFINE_CLASS_MSG2_H(CTrafficMsg_fromSwitch, uint8_t, gpio, uint8_t, value)
+DEFINE_CLASS_MSG1_H(CTrafficMsg_askSwitchForData, uint8_t, gpio)
+DEFINE_CLASS_MSG1_H(CConfMsg_numOfConf, uint8_t, count)
+DEFINE_CLASS_MSG1_H(CConfMsg_switch, uint8_t, gpio)
+DEFINE_CLASS_MSG1_H(CConfMsg_watchdog, uint8_t, to)
+DEFINE_CLASS_MSG3_H(CConfMsg_light, uint8_t, gpio, MacID, switchMacID, uint8_t, switchGPIO)
+DEFINE_CLASS_MSG0_H(CConfMsg_reset)
+DEFINE_CLASS_MSG1_H(CConfMsg_setCanBusSpeed, uint8_t, canBusSpeed)
+DEFINE_CLASS_MSG1_H(CConfMsg_autoReset, uint8_t, autoResetTime)
+DEFINE_CLASS_MSG0_H(CConfMsg_askForConfiguration)
+DEFINE_CLASS_MSG0_H(CConfMsg_newConfiguration)
+DEFINE_CLASS_MSG0_H(CTrafficMsg_ping)
+DEFINE_CLASS_MSG0_H(CTrafficMsg_ImUp)
+
+
 //class CTrafficMsg_fromSwitch : public CDataBase {
 //public:
 //	byte _gpio;
@@ -126,7 +137,7 @@ DEFINE_CLASS_MSG2_H(CTrafficMsg_fromSwitch, uint8_t, gpio, uint8_t, value)
 //	void deserialize(byte * pData);
 //};
 
-DEFINE_CLASS_MSG1_H(CTrafficMsg_askSwitchForData, uint8_t, gpio)
+
 //class CTrafficMsg_askSwitchForData : public CDataBase {
 //public:
 //	byte _gpio;
@@ -140,7 +151,7 @@ DEFINE_CLASS_MSG1_H(CTrafficMsg_askSwitchForData, uint8_t, gpio)
 //	void deserialize(byte * pData);
 //};
 
-DEFINE_CLASS_MSG1_H(CConfMsg_numOfConf, uint8_t, count)
+
 //class CConfMsg_numOfConf : public CDataBase {
 //public:
 //	byte _count;
@@ -154,7 +165,7 @@ DEFINE_CLASS_MSG1_H(CConfMsg_numOfConf, uint8_t, count)
 //	void deserialize(byte * pData);
 //};
 
-DEFINE_CLASS_MSG1_H(CConfMsg_switch, uint8_t, gpio)
+
 //class CConfMsg_switch : public CDataBase {
 //public:
 //	byte _gpio;
@@ -168,7 +179,7 @@ DEFINE_CLASS_MSG1_H(CConfMsg_switch, uint8_t, gpio)
 //	void deserialize(byte * pData);
 //};
 
-DEFINE_CLASS_MSG3_H(CConfMsg_light, uint8_t, gpio, MacID, switchMacID, uint8_t, switchGPIO)
+
 //class CConfMsg_light : public CDataBase {
 //public:
 //	byte _gpio;
@@ -184,7 +195,7 @@ DEFINE_CLASS_MSG3_H(CConfMsg_light, uint8_t, gpio, MacID, switchMacID, uint8_t, 
 //	void deserialize(byte * pData);
 //};
 
-DEFINE_CLASS_MSG1_H(CConfMsg_watchdog, uint8_t, to)
+
 //class CConfMsg_watchdog : public CDataBase {
 //public :
 //	uint8_t _to; //* WATCHDOG_TIMEOUT
@@ -198,7 +209,7 @@ DEFINE_CLASS_MSG1_H(CConfMsg_watchdog, uint8_t, to)
 //	void deserialize(byte * pData);
 //};
 
-DEFINE_CLASS_MSG0_H(CConfMsg_reset)
+
 //class CConfMsg_reset : public CDataBase {
 //public:
 //	CConfMsg_reset(MacID macId);
@@ -209,7 +220,7 @@ DEFINE_CLASS_MSG0_H(CConfMsg_reset)
 //	void deserialize(byte * pData);
 //};
 
-DEFINE_CLASS_MSG1_H(CConfMsg_autoReset, uint8_t, autoResetTime)
+
 //class CConfMsg_autoReset : public CDataBase {
 //public:
 //	uint8_t _autoResetTime;
@@ -222,7 +233,7 @@ DEFINE_CLASS_MSG1_H(CConfMsg_autoReset, uint8_t, autoResetTime)
 //	void deserialize(byte * pData);
 //};
 
-DEFINE_CLASS_MSG0_H(CConfMsg_askForConfiguration)
+
 
 //class CConfMsg_askForConfiguration : public CDataBase {
 //public:
@@ -234,7 +245,7 @@ DEFINE_CLASS_MSG0_H(CConfMsg_askForConfiguration)
 //	void deserialize(byte * pData);
 //};
 
-DEFINE_CLASS_MSG1_H(CConfMsg_setCanBusSpeed, uint8_t, canBusSpeed)
+
 
 //class CConfMsg_setCanBusSpeed : public CDataBase {
 //private:
@@ -248,7 +259,7 @@ DEFINE_CLASS_MSG1_H(CConfMsg_setCanBusSpeed, uint8_t, canBusSpeed)
 //	void deserialize(byte * pData);
 //};
 
-DEFINE_CLASS_MSG0_H(CConfMsg_newConfiguration)
+
 //class CConfMsg_newConfiguration : public CDataBase {
 //private:
 //public:
@@ -260,7 +271,7 @@ DEFINE_CLASS_MSG0_H(CConfMsg_newConfiguration)
 //	void deserialize(byte * pData);
 //};
 
-DEFINE_CLASS_MSG0_H(CTrafficMsg_ping)
+
 //class CTrafficMsg_ping : public CDataBase {
 //public:
 //	CTrafficMsg_ping(MacID macId);
@@ -271,7 +282,7 @@ DEFINE_CLASS_MSG0_H(CTrafficMsg_ping)
 //	void deserialize(byte * pData);
 //};
 
-DEFINE_CLASS_MSG0_H(CTrafficMsg_ImUp)
+
 //class CTrafficMsg_ImUp : public CDataBase {
 //public:
 //	CTrafficMsg_ImUp(MacID macId);
