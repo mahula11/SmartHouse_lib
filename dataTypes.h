@@ -93,8 +93,8 @@ enum AUTO_RESET_TIMES {
 
 class CDataBase {
 public:
-	static byte s_type;
-	static byte getType();
+	byte _type;
+	byte getType();
 	//* Conf messages send type against traffic messages where we don't send type
 	bool _modeForEeprom;
 	CanID _destCanID;

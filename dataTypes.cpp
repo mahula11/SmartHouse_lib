@@ -20,12 +20,12 @@ const char* canBusSpeeds[15] = {
 	"CAN_1000KBPS"
 };
 
-byte CDataBase::s_type;
+//byte CDataBase::s_type;
 
 //* ---------------------- start CDataBase --------------------------
 
 CDataBase::CDataBase(byte type, MacID macId) {
-	s_type = type;
+	_type = type;
 	_modeForEeprom = false;
 	_destCanID.setMacID(macId);
 	_destCanID.setFlagExtended();
@@ -36,11 +36,11 @@ CDataBase::CDataBase(byte type, MacID macId) {
 //}
 
 byte CDataBase::getSize() {
-	return _modeForEeprom ? sizeof(s_type) : 0;
+	return _modeForEeprom ? sizeof(_type) : 0;
 }
 
 byte CDataBase::getType() {
-	return s_type;
+	return _type;
 }
 
 void CDataBase::setModeForEeprom(bool mode) {
